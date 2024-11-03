@@ -1,0 +1,73 @@
+const items = [
+    {
+      text: 'Licenses',
+      icon: '/images/licenses.webp',
+      path: '/Licenses/Licensepage', 
+      submenu: [
+        { text: 'Trade Licenses', path: '/Licenses/Licensepage/trade' },
+        { text: 'Staff Medicals', path: '/Licenses/Licensepage/medicals' },
+        { text: 'Tourism Licenses', path: '/Licenses/Licensepage/tourism' },
+        { text: 'Labour Licenses', path: '/Licenses/Licensepage/labour' },
+      ],
+    },
+    {
+      text: 'Approvals',
+      icon: '/images/approved.webp',
+      path: '/Approval/Approvalpage',
+      submenu: [{ text: 'Outer Spaces', path: '/Approval/Approvalpage/outer' }],
+    },
+    {
+      text: 'Vehicles',
+      icon: '/images/vehicle.webp',
+      path: '/Vehicles/Vehiclepage',
+      submenu: [
+        { text: 'Maintenance', path: '/Vehicles/Vehiclepage/maintenance' },
+        { text: 'Token Taxes', path: '/Vehicles/Vehiclepage/taxes' },
+        { text: 'Route Permits', path: '/Vehicles/Vehiclepage/permits' },
+      ],
+    },
+    { text: 'User Requests', icon: '/images/user_icon.webp', path: '/User-Requests' },
+    {
+      text: 'HSE',
+      icon: '/images/hse.webp',
+      path: '/Hse/Hse',
+      submenu: [
+        { text: 'Monthly Expenses', path: '/Hse/Hse/monthly' },
+        { text: 'Quarterly Audit', path: '/Hse/Hse/quarterly' },
+        { text: 'Expiry of Cylinders', path: '/Hse/Hse/expiry' },
+        { text: 'Training', path: '/Hse/Hse/training' },
+        { text: 'Incidents', path: '/Hse/Hse/incidents' },
+      ],
+    },
+    {
+      text: 'Taxation',
+      icon: '/images/taxation.webp',
+      path: '/Taxation/Taxationpage',
+      submenu: [
+        { text: 'Marketing / Bill Boards Taxes', path: '/Taxation/Taxationpage/marketing' },
+        { text: 'Profession Tax', path: '/Taxation/Taxationpage/profession' },
+      ],
+    },
+    {
+      text: 'Certificates',
+      icon: '/images/certificate.webp',
+      path: '/Certificate/Certificatepage',
+      submenu: [{ text: 'Electric Fitness Test', path: '/Certificate/Certificatepage/fitness' }],
+    },
+    {
+      text: 'Security',
+      icon: '/images/security.webp',
+      path: '/Security/Securitypage',
+      submenu: [{ text: 'Guard Training', path: '/Security/Securitypage/training' }],
+    },
+    { 
+      text: 'Admin Policies and SOPs', 
+      icon: '/images/admin_icon.webp',
+      path: '/AdminPolicies' 
+    },
+    { 
+      text: 'Rental Agreements', 
+      icon: '/images/rental_agreements.webp',
+      path: '/RentalAgreements' 
+    },
+  ];
