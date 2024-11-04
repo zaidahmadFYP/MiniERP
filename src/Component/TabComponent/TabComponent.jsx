@@ -52,9 +52,9 @@ const TabsComponent = ({ latestAnnouncement, userId, userZone, userBranch, userE
 
       <Box
         sx={{
-          p: 3,
+          p: 2,
           pt: 1,
-          height: '300px',
+          height: '220px', // Reduced height from 300px to 200px
           overflowY: 'auto',
           // Custom scrollbar styling
           '&::-webkit-scrollbar': {
@@ -116,7 +116,7 @@ const TabsComponent = ({ latestAnnouncement, userId, userZone, userBranch, userE
                 </Typography>
               </>
             ) : (
-              <Typography variant="h6">No Major Announcements</Typography>
+              <Typography variant="h6">No Announcements</Typography>
             )}
           </Box>
         )}

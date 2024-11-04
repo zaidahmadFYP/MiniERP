@@ -118,7 +118,7 @@ const TaskForm = ({ onClose, userBranch }) => {
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Add Assigned Task</Typography>
+            <Typography variant="h6">Add Task</Typography>
             <IconButton onClick={onClose}>
               <CloseIcon />
             </IconButton>

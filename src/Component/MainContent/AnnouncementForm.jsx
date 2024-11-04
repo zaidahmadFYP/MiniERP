@@ -44,7 +44,7 @@ const AnnouncementForm = ({ onClose, user }) => {
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Add Major Announcement</Typography>
+            <Typography variant="h6">Add Announcement</Typography>
             <IconButton onClick={onClose}>
               <CloseIcon />
             </IconButton>

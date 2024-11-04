@@ -138,7 +138,7 @@ const MainContent = ({ user }) => {
                 }}
                 onClick={() => setShowAnnouncementForm(true)}
               >
-                Add Major Announcement
+                Add Announcement
               </Button>
               <Button
                 variant="contained"
@@ -155,7 +155,7 @@ const MainContent = ({ user }) => {
                 }}
                 onClick={() => setShowTaskForm(true)}
               >
-                Add Assigned Task
+                Add Task
               </Button>
             </Box>
           )}

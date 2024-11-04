@@ -5,16 +5,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import Tooltip from '@mui/material/Tooltip';
 import SearchBar from '../SearchBar/SearchBar';
+import ProfileMenu from './ProfileMenu'; // Import the new component
 import { Link, useNavigate } from 'react-router-dom';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import './AppBarComponent.css';
 
 const AppBar = styled(MuiAppBar, {
@@ -33,51 +34,46 @@ const AppBarComponent = ({
   searchQuery,
   onSearch,
   searchResults,
-  user = { name: 'John Doe', email: 'johndoe@example.com', role: 'Admin', branch: 'New York' }, // Example user details
+  user = { name: 'John Doe', email: 'johndoe@example.com', role: 'Admin', branch: 'New York' },
   onLogout,
 }) => {
   const [spinning, setSpinning] = useState(false);
   const [jumping, setJumping] = useState(false);
   const [pulsing, setPulsing] = useState(false);
   const [rotating, setRotating] = useState(false);
-  const [drawerRotating, setDrawerRotating] = useState(false); // New state for drawer icon
+  const [drawerRotating, setDrawerRotating] = useState(false); 
   const [highlightedIcon, setHighlightedIcon] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null); // For Settings Menu
   const [profileAnchorEl, setProfileAnchorEl] = useState(null); // For Profile Menu
+  const [settingsAnchorEl, setSettingsAnchorEl] = useState(null); // For Settings Menu
   const navigate = useNavigate();
 
-  const isMenuOpen = Boolean(anchorEl);
   const isProfileMenuOpen = Boolean(profileAnchorEl);
-
-  const handleMenuOpen = (event) => {
-    setHighlightedIcon('settings');
-    setSpinning(true);
-    setAnchorEl(event.currentTarget);
-    setTimeout(() => setSpinning(false), 500);
-  };
+  const isSettingsMenuOpen = Boolean(settingsAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
     setHighlightedIcon('account');
     setProfileAnchorEl(event.currentTarget);
   };
 
+  const handleSettingsMenuOpen = (event) => {
+    setHighlightedIcon('settings');
+    setSpinning(true);
+    setSettingsAnchorEl(event.currentTarget);
+    setTimeout(() => setSpinning(false), 500);
+  };
+
   const handleMenuClose = () => {
-    setAnchorEl(null);
     setProfileAnchorEl(null);
+    setSettingsAnchorEl(null);
     setHighlightedIcon(null);
   };
 
   const handleLogout = () => {
-    // Clear any session or local storage
-    localStorage.removeItem('token'); // Assuming you are storing a token
-    localStorage.removeItem('user');  // Assuming you are storing user info
-
-    // Reset the authentication state if needed (for example, using a Context or Redux)
-
-    // Close the menu and navigate to login
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     handleMenuClose();
     onLogout(); 
-    navigate('/login', { replace: true }); // Use `replace: true` to prevent going back to the logged-in page
+    navigate('/login', { replace: true });
   };
 
   const triggerAnimation = (setter, icon) => {
@@ -100,7 +96,7 @@ const AppBarComponent = ({
             color="inherit"
             aria-label="open drawer"
             onClick={() => {
-              handleDrawerToggle(); // Ensure drawer toggle is called
+              handleDrawerToggle();
               triggerAnimation(setDrawerRotating, 'drawer');
             }}
             edge="start"
@@ -206,65 +202,22 @@ const AppBarComponent = ({
             <AccountCircle />
           </IconButton>
         </Tooltip>
-        <Menu
+
+        {/* Use ProfileMenu component */}
+        <ProfileMenu
           anchorEl={profileAnchorEl}
-          open={isProfileMenuOpen}
+          isOpen={isProfileMenuOpen}
           onClose={handleMenuClose}
-          PaperProps={{
-            style: {
-              width: 360,
-              padding: '15px',
-              marginTop: '10px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              backgroundColor: darkMode ? '#424242' : '#fff',
-              color: darkMode ? '#e0e0e0' : '#000',
-              position: 'relative',
-            },
-          }}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          sx={{
-            '& .MuiPaper-root::before': {
-              content: '""',
-              position: 'absolute',
-              top: '-10px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 0,
-              height: 0,
-              borderLeft: '10px solid transparent',
-              borderRight: '10px solid transparent',
-              borderBottom: `10px solid ${darkMode ? '#424242' : '#fff'}`,
-            },
-          }}
-        >
-          <MenuItem disabled sx={{ color: darkMode ? '#ffffff' : '#000', marginBottom: '10px' }}>
-            <strong>Username:</strong> {` ${user.name}`}
-          </MenuItem>
-          <MenuItem disabled sx={{ color: darkMode ? '#ffffff' : '#000', marginBottom: '10px' }}>
-            <strong>Email:</strong> {` ${user.email}`}
-          </MenuItem>
-          <MenuItem disabled sx={{ color: darkMode ? '#ffffff' : '#000', marginBottom: '10px' }}>
-            <strong>Role:</strong> {` ${user.role}`}
-          </MenuItem>
-          <MenuItem disabled sx={{ color: darkMode ? '#ffffff' : '#000' }}>
-            <strong>Branch:</strong> {` ${user.branch}`}
-          </MenuItem>
-        </Menu>
+          user={user}
+          darkMode={darkMode}
+        />
 
         <Tooltip title="Settings" placement="bottom" arrow enterDelay={900}>
           <IconButton
             size="large"
             aria-label="settings"
             color="inherit"
-            onClick={handleMenuOpen}
+            onClick={handleSettingsMenuOpen}
             className={`${spinning ? 'spinning' : ''} ${highlightedIcon === 'settings' ? 'highlighted' : ''}`}
             sx={{
               padding: '12px',
@@ -277,8 +230,8 @@ const AppBarComponent = ({
           </IconButton>
         </Tooltip>
         <Menu
-          anchorEl={anchorEl}
-          open={isMenuOpen}
+          anchorEl={settingsAnchorEl}
+          open={isSettingsMenuOpen}
           onClose={handleMenuClose}
           PaperProps={{
             style: {
