@@ -74,10 +74,6 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
     }
   };
 
-  const handleDrawerToggleInternal = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   useEffect(() => {
     setIsOpen(open);
   }, [open]);
@@ -140,8 +136,8 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
       icon: '/images/taxation.webp',
       path: '/Taxation/Taxationpage',
       submenu: [
-        { text: 'Marketing / Bill Boards Taxes', path: '/Taxation/MarketingBillBoardsTaxes' },
-        { text: 'Profession Tax', path: '/Taxation/ProfessionTax' },
+        { text: 'Marketing / Bill Boards Taxes', path: '/Taxation/Taxationpage' },
+        { text: 'Profession Tax', path: '/Taxation/Taxationpage' },
       ],
     },
     {
@@ -181,7 +177,7 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (drawerRef.current && !drawerRef.current.contains(event.target) && isOpen) {
-        handleDrawerToggleInternal();
+        handleDrawerToggle();
       }
     };
 
@@ -190,12 +186,12 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, handleDrawerToggle]);
 
   return (
     <div ref={drawerRef}>
       <Drawer variant="permanent" open={isOpen}>
-        <DrawerHeader open={isOpen} handleDrawerToggle={handleDrawerToggleInternal} theme={theme} />
+        <DrawerHeader open={isOpen} handleDrawerToggle={handleDrawerToggle} theme={theme} />
 
         <List
           sx={{
