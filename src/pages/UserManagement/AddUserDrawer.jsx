@@ -80,7 +80,7 @@ const preSelectedModulesForRestaurantManager = {
   'Certificates_Electric Fitness Test': true
 };
 
-const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
+const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [roleType, setRoleType] = useState('Headquarter Roles');
   const [role, setRole] = useState('');
@@ -251,6 +251,10 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
     if (!formValues.username.trim()) {
       errors.username = 'Username is required';
     }
+    if (!generatePassword) {
+      errors.generatePassword = 'You must generate a password';
+      //alert('Please select "Generate New Password" before proceeding.');
+    }
 
     setFormErrors(errors);
 
@@ -321,11 +325,26 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
     ));
   };
 
+  // Handle selecting/deselecting all submodules
+  const handleSelectAllSubmodules = (main, checked) => {
+    const updatedCheckedModules = { ...checkedModules };
+
+    modules.forEach((module) => {
+      if (module.main === main) {
+        module.subModules.forEach((sub) => {
+          updatedCheckedModules[`${main}_${sub}`] = checked;
+        });
+      }
+    });
+
+    setCheckedModules(updatedCheckedModules);
+  };
+
   // Render module selection for Manage Modules step
   const renderModuleSelection = () => {
     const modulesWithSubModules = modules.filter((module) => module.subModules.length > 0);
     const modulesWithoutSubModules = modules.filter((module) => module.subModules.length === 0);
-
+  
     return (
       <Box
         sx={{
@@ -337,19 +356,51 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
           },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: '#f15a22',
-            borderRadius: '10px',
+            borderRadius: '15px',
           },
           '&::-webkit-scrollbar-track': {
             backgroundColor: isDarkMode ? '#333' : '#f5f5f5',
           },
         }}
       >
+        {/* Modules with Submodules */}
         {modulesWithSubModules.map((module) => (
           <Accordion key={module.main} sx={{ marginBottom: 0 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: isDarkMode ? '#fff' : '#000' }} />}>
-              <Typography sx={{ color: isDarkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
-                {module.main}
-              </Typography>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: isDarkMode ? '#fff' : '#000' }} />}
+              sx={{
+                minHeight: '32px', // Decrease the height further
+                '&.Mui-expanded': {
+                  minHeight: '32px', // Maintain the compact height when expanded
+                },
+                '.MuiAccordionSummary-content': {
+                  margin: '4px 0', // Reduce inner content spacing
+                },
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={module.subModules.every((sub) => !!checkedModules[`${module.main}_${sub}`])}
+                    indeterminate={
+                      module.subModules.some((sub) => !!checkedModules[`${module.main}_${sub}`]) &&
+                      !module.subModules.every((sub) => !!checkedModules[`${module.main}_${sub}`])
+                    }
+                    onChange={(e) => {
+                      e.stopPropagation(); // Prevent accordion from toggling
+                      handleSelectAllSubmodules(module.main, e.target.checked);
+                    }}
+                    sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
+                  />
+                }
+                label={
+                  <Typography sx={{ color: isDarkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+                    {module.main}
+                  </Typography>
+                }
+                sx={{ marginRight: 1 }}
+                onClick={(e) => e.stopPropagation()} // Prevent accordion from toggling when clicking on the label
+              />
             </AccordionSummary>
             <AccordionDetails>
               <FormGroup>
@@ -370,28 +421,48 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
             </AccordionDetails>
           </Accordion>
         ))}
-
-        <Divider sx={{ my: 3, backgroundColor: isDarkMode ? '#666' : '#d1d1d1' }} />
-
-        <Grid container spacing={2}>
-          {modulesWithoutSubModules.map((module) => (
-            <Grid item xs={6} key={module.main}>
+  
+        {/* Modules without Submodules */}
+        {modulesWithoutSubModules.map((module) => (
+          <Accordion key={module.main} sx={{ marginBottom: 0 }}>
+            <AccordionSummary
+              sx={{
+                minHeight: '32px', // Decrease the height further
+                '&.Mui-expanded': {
+                  minHeight: '32px', // Maintain the compact height when expanded
+                },
+                '.MuiAccordionSummary-content': {
+                  margin: '4px 0', // Reduce inner content spacing
+                },
+              }}
+            >
               <FormControlLabel
                 control={
                   <Checkbox
                     checked={!!checkedModules[`${module.main}_`]}
-                    onChange={handleModuleChange(module.main, '')}
+                    onChange={(e) => {
+                      e.stopPropagation(); // Prevent accordion from toggling
+                      handleModuleChange(module.main, '')(e);
+                    }}
                     sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
                   />
                 }
-                label={module.main}
+                label={
+                  <Typography sx={{ color: isDarkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+                    {module.main}
+                  </Typography>
+                }
+                sx={{ marginRight: 1 }}
+                onClick={(e) => e.stopPropagation()} // Prevent accordion from toggling when clicking on the label
               />
-            </Grid>
-          ))}
-        </Grid>
+            </AccordionSummary>
+          </Accordion>
+        ))}
       </Box>
     );
   };
+  
+  
 
   // Handle finish and submit user
   const handleFinish = async () => {
@@ -440,8 +511,8 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
       anchor="right"
       open={open}
       onClose={() => {
-        resetDrawer(); 
-        onClose(); 
+        resetDrawer();
+        onClose();
       }}
       PaperProps={{ sx: { width: '70%' } }}
     >
@@ -641,6 +712,11 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
                     }
                     label="Generate New Password"
                   />
+                  {formErrors.generatePassword && (
+                    <Typography sx={{ color: '#f44336', mt: 1 }}>
+                      {formErrors.generatePassword}
+                    </Typography>
+                  )}
                 </Grid>
 
               </Grid>
@@ -661,23 +737,23 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
                     },
                   }}
                 >
-                  Select Role Type
+                  Select Type
                 </FormLabel>
                 <RadioGroup row value={roleType} onChange={handleRoleTypeChange}>
                   <FormControlLabel
                     value="Headquarter Roles"
                     control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Headquarter Roles"
+                    label="Department"
                   />
                   <FormControlLabel
                     value="Branch Roles"
                     control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Branch Roles"
+                    label="Branch"
                   />
                   <FormControlLabel
                     value="Custom Role"
                     control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Custom Role"
+                    label="Custom"
                   />
                 </RadioGroup>
               </FormControl>
@@ -731,7 +807,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
                     }}
                   >
                     <MenuItem value="" disabled>
-                      Select Role
+                      Select Department
                     </MenuItem>
                     {headquarterRoles.map((r) => (
                       <MenuItem key={r} value={r}>
@@ -762,7 +838,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
                     }}
                   >
                     <MenuItem value="" disabled>
-                      Select Role
+                      Select Branch Role
                     </MenuItem>
                     {branchRoles.map((r) => (
                       <MenuItem key={r} value={r}>
@@ -832,7 +908,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated  }) => {
                   }}
                 >
                   <MenuItem value="" disabled>
-                    {branches.length === 0 ? "No Branches Available" : "Select Branch"}
+                    {branches.length === 0 ? "No Zone Selected" : "Select Branch"}
                   </MenuItem>
 
                   {branches.length > 0 &&
