@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import CssBaseline from '@mui/material/CssBaseline';
 
 // Component Imports 
-import SignInPage from './Component/Signin/Signin'; 
+import SignInPage from './Component/Signin/Signin';
 import AppBarComponent from './Component/AppBarComponent/AppBarComponent';
 import DrawerComponent from './Component/DrawerComponent/DrawerComponent';
 import MainContent from './Component/MainContent/MainContent';
@@ -100,6 +100,8 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null); // Clear user data on logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   const items = [
@@ -112,8 +114,8 @@ function App() {
     { name: 'Certificates', path: '/Certificate/Certificatepage', category: 'Modules > Certificates' },
     { name: 'Security', path: '/Security/Securitypage', category: 'Modules > Security' },
     { name: 'Admin Policies and SOPs', path: '/AdminPolicies', category: 'Modules > Admin Policies' },
-    { name: 'Rental Agreements', path: '/RentalAgreements', category: 'Modules > Rental Agreements'},
-    { name: 'User Management', path: '/UserManagement', category: 'Modules > User Management'},
+    { name: 'Rental Agreements', path: '/RentalAgreements', category: 'Modules > Rental Agreements' },
+    { name: 'User Management', path: '/UserManagement', category: 'Modules > User Management' },
   ];
 
   const handleSearch = (query) => {
@@ -186,8 +188,14 @@ function App() {
             user={user}
           />
         )}
-        {isAuthenticated && <DrawerComponent open={open} user={user} handleDrawerToggle={handleDrawerToggle} theme={theme} />}
-
+        {isAuthenticated && (
+          <DrawerComponent
+            open={open}
+            user={user}
+            handleDrawerToggle={handleDrawerToggle}
+            theme={theme}
+          />
+        )}
         <Routes>
           <Route path="/login" element={<SignInPage onLogin={handleLogin} />} />
 
@@ -197,13 +205,13 @@ function App() {
           />
 
           <Route path="/UserManagement/" element={isAuthenticated ? <ActiveUsers open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/RentalAgreements/" element={isAuthenticated ? <RentalAgreements user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/AdminPolicies/" element={isAuthenticated ? <AdminPolicies user={user} open={open} /> : <Navigate to="/login" />} />
-         
+
           <Route path="/UserRequests/" element={isAuthenticated ? <UserRequests user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/Licenses/Licensepage" element={isAuthenticated ? <Licensepage user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/Cantonment" element={isAuthenticated ? <Cantonment user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/CapitalFoodAuthority" element={isAuthenticated ? <CapitalFoodAuthority user={user} open={open} /> : <Navigate to="/login" />} />
@@ -211,28 +219,28 @@ function App() {
           <Route path="/Licenses/LabourLicenses" element={isAuthenticated ? <LabourLicenses user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/Medical" element={isAuthenticated ? <Medical user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/PunjabFoodAuthority" element={isAuthenticated ? <PunjabFoodAuthority user={user} open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Licenses/RecurringMedicalTests" element={isAuthenticated ? <RecurringMedicalTests user={user}open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Licenses/TourismLicenses" element={isAuthenticated ? <TourismLicenses user={user}open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Licenses/RecurringMedicalTests" element={isAuthenticated ? <RecurringMedicalTests user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Licenses/TourismLicenses" element={isAuthenticated ? <TourismLicenses user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/VaccineRecord" element={isAuthenticated ? <VaccineRecord user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Licenses/HiringTests" element={isAuthenticated ? <HiringTests user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/Approval/Approvalpage" element={isAuthenticated ? <Approvalpage user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Approval/DineIn" element={isAuthenticated ? <DineIn user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Approval/Generators" element={isAuthenticated ? <Generators user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Approval/Facilities" element={isAuthenticated ? <Facilities user={user} open={open} /> : <Navigate to="/login" />} />
-          
-          <Route path="/Vehicles/Vehiclepage" element={isAuthenticated ? <Vehiclepage user={user} open={open}  /> : <Navigate to="/login" />} />
+
+          <Route path="/Vehicles/Vehiclepage" element={isAuthenticated ? <Vehiclepage user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/RoutineMaintainence" element={isAuthenticated ? <RoutineMaintainence user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/MajorParts" element={isAuthenticated ? <MajorParts user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/MajorRepairs" element={isAuthenticated ? <MajorRepairs user={user} /> : <Navigate to="/login" />} />
-          <Route path="/Vehicles/AnnualTokenTax" element={isAuthenticated ? <AnnualTokenTax user={user}/> : <Navigate to="/login" />} />
+          <Route path="/Vehicles/AnnualTokenTax" element={isAuthenticated ? <AnnualTokenTax user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/MTag" element={isAuthenticated ? <MTag user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/CanttPasses" element={isAuthenticated ? <CanttPasses user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/Islamabad" element={isAuthenticated ? <Islamabad user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/Peshawar" element={isAuthenticated ? <Peshawar user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/Rawalpindi" element={isAuthenticated ? <Rawalpindi user={user} /> : <Navigate to="/login" />} />
           <Route path="/Vehicles/Wah" element={isAuthenticated ? <Wah user={user} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/Hse/Hse" element={isAuthenticated ? <Hse user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Hse/MonthlyInspection" element={isAuthenticated ? <MonthlyInspection open={open} /> : <Navigate to="/login" />} />
           <Route path="/Hse/QuarterlyAudit" element={isAuthenticated ? <QuarterlyAudit open={open} /> : <Navigate to="/login" />} />
@@ -241,16 +249,16 @@ function App() {
           <Route path="/Hse/LostTimeInjury" element={isAuthenticated ? <LostTimeInjury open={open} /> : <Navigate to="/login" />} />
           <Route path="/Hse/RestrictedWorkInjury" element={isAuthenticated ? <RestrictedWorkInjury open={open} /> : <Navigate to="/login" />} />
           <Route path="/Hse/FireSafety" element={isAuthenticated ? <FireSafety user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/Taxation/Taxationpage" element={isAuthenticated ? <Taxationpage user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Taxation/MarketingBillBoardsTaxes" element={isAuthenticated ? <MarketingBillBoardsTaxes user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Taxation/ProfessionTax" element={isAuthenticated ? <ProfessionTax user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
           <Route path="/Certificate/Certificatepage" element={isAuthenticated ? <Certificatepage user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Certificate/ElectricFitnessTest" element={isAuthenticated ? <ElectricFitnessTest user={user} open={open} /> : <Navigate to="/login" />} />
-          
-          <Route path="/Security/GuardTraining" element={isAuthenticated ? <GuardTraining  user={user} open={open} /> : <Navigate to="/login" />} />
-          
+
+          <Route path="/Security/GuardTraining" element={isAuthenticated ? <GuardTraining user={user} open={open} /> : <Navigate to="/login" />} />
+
           <Route path="/ModulesGrid" element={isAuthenticated ? <ModulesGrid /> : <Navigate to="/login" />} />
         </Routes>
       </Router>

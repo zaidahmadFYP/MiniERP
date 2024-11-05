@@ -1,9 +1,24 @@
-import React from 'react';
-import { Menu, MenuItem, Avatar, Typography, Box, Divider } from '@mui/material';
+import React, { useState } from 'react';
+import { Menu, Avatar, Typography, Box, Divider, Button, CircularProgress } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogout = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      onClose();
+      window.location.href = '/login'; // Ensure full page reload to remove app state
+    }, 1000); // Simulate a short delay for loading animation
+  };
+
   return (
     <Menu
       anchorEl={anchorEl}
@@ -55,18 +70,39 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
 
       {/* Role and Branch Details with Prominent Text and Icons */}
       <Box display="flex" flexDirection="column" alignItems="center">
-        <MenuItem disabled sx={{ padding: 0, color: darkMode ? '#c5cae9' : '#444', display: 'flex', alignItems: 'center', mb: 1 }}>
-          <WorkIcon fontSize="small" sx={{ mr: 1, color: darkMode ? '#90caf9' : '#1e88e5' }} />
-          <Typography variant="body2" sx={{ fontWeight: 'bold', color: darkMode ? '#c5cae9' : '#444' }}>
-            Role: <span style={{ fontWeight: 'normal', color: darkMode ? '#e8eaf6' : '#555' }}>{user.role || 'N/A'}</span>
+        <Box sx={{ padding: 0, color: '#000', display: 'flex', alignItems: 'center', mb: 1 }}>   
+          <WorkIcon fontSize="small" sx={{ mr: 1, color: '#ff5722'  }} />
+          <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#000' }}>
+            Role: <span style={{ fontWeight: 'bold', color: '#000' }}>{user.role || 'N/A'}</span>
           </Typography>
-        </MenuItem>
-        <MenuItem disabled sx={{ padding: 0, color: darkMode ? '#c5cae9' : '#444', display: 'flex', alignItems: 'center' }}>
-          <LocationOnIcon fontSize="small" sx={{ mr: 1, color: darkMode ? '#90caf9' : '#1e88e5' }} />
-          <Typography variant="body2" sx={{ fontWeight: 'bold', color: darkMode ? '#c5cae9' : '#444' }}>
-            Branch: <span style={{ fontWeight: 'normal', color: darkMode ? '#e8eaf6' : '#555' }}>{user.branch || 'N/A'}</span>
+        </Box>
+        <Box sx={{ padding: 0, color: '#000', display: 'flex', alignItems: 'center' }}>   
+          <LocationOnIcon fontSize="small" sx={{ mr: 1, color: '#f15a22' }} />
+          <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#000' }}>
+            Branch: <span style={{ fontWeight: 'bold', color: '#000' }}>{user.branch || 'N/A'}</span>
           </Typography>
-        </MenuItem>
+        </Box>
+      </Box>
+
+      {/* Divider and Centered Logout Button */}
+      <Divider sx={{ my: 2, backgroundColor: darkMode ? '#424242' : '#e0e0e0' }} />
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Button
+          onClick={handleLogout}
+          variant="contained"
+          color="error"
+          startIcon={isLoading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <LogoutIcon />}
+          sx={{
+            textTransform: 'none',
+            fontWeight: 'bold',
+            padding: '8px 16px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px',
+          }}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging out...' : 'Logout'}
+        </Button>
       </Box>
     </Menu>
   );
