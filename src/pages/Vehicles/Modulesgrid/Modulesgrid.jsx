@@ -20,41 +20,54 @@ const ModulesGrid = ({ user }) => {
       {
         name: 'Vehicles_Maintenance',
         image: '/images/folder.webp',
-        path: '/Licenses/Licensepage',
-        subheadings: ['Routine Maintainence', 'Major parts/Replacements', 'Major Repairs'],
+        subheadings: [
+          { title: 'Routine Maintenance', path: '/Vehicles/RoutineMaintainence' },
+          { title: 'Major parts/Replacements', path: '/Vehicles/MajorParts' },
+          { title: 'Major Repairs', path: '/Vehicles/MajorRepairs' },
+        ],
       },
       {
-        name: 'Vehicles_Token taxes',
+        name: 'Vehicles_Token Taxes',
         image: '/images/folder.webp',
-        path: '/Approvals',
-        subheadings: ['Annual Token Tax', 'M-Tag For SC Vehicles'],
+        subheadings: [
+          { title: 'Annual Token Tax', path: '/Vehicles/AnnualTokenTax' },
+          { title: 'M-Tag For SC Vehicles', path: '/Vehicles/MTag' },
+        ],
       },
       {
         name: 'Vehicles_Route Permits',
         image: '/images/folder.webp',
-        path: '/Vehicles',
-        subheadings: ['Cantt Passes', 'Islamabad Capital Territory', 'Rawalpindi', 'Peshawar', 'Wah'],
+        subheadings: [
+          { title: 'Cantt Passes', path: '/Vehicles/CanttPasses' },
+          { title: 'Islamabad Capital Territory', path: '/Vehicles/Islamabad' },
+          { title: 'Rawalpindi', path: '/Vehicles/Rawalpindi' },
+          { title: 'Peshawar', path: '/Vehicles/Peshawar' },
+          { title: 'Wah', path: '/Vehicles/Wah' },
+        ],
       },
     ];
 
-    // Normalizing names to remove extra spaces and slashes to ensure comparison consistency
-    const normalizeName = (name) => name.replace(/\s+/g, '').replace(/\//g, '').toLowerCase();
-
-    const filteredModules = allModules.filter((module) =>
-        user?.registeredModules.some(
-            (registered) => normalizeName(registered) === normalizeName(module.name)
-        )
-    );
+    const filteredModules = allModules
+      .map((module) => {
+        // Filter subheadings based on user's registeredModules
+        const filteredSubheadings = module.subheadings.filter((subheading) =>
+          user?.registeredModules.some((registered) => registered === `${module.name.split('_')[0]}_${subheading.title}` || registered === module.name)
+        );
+        // Only return the module if it has at least one subheading that the user has access to
+        if (filteredSubheadings.length > 0) {
+          return { ...module, subheadings: filteredSubheadings };
+        }
+        return null;
+      })
+      .filter((module) => module !== null);
 
     console.log('Filtered modules:', filteredModules); // Debug log to verify filtered modules
     return filteredModules;
-}, [user]);
+  }, [user]);
 
   const handleTileClick = (index, hasSubheadings) => {
     if (hasSubheadings) {
       setExpandedTile(index === expandedTile ? null : index);
-    } else {
-      handleSubheadingClick(modules[index].path);
     }
   };
 
@@ -65,7 +78,7 @@ const ModulesGrid = ({ user }) => {
 
   return (
     <Box sx={{ padding: 3, position: 'relative' }}>
-      <Grid container spacing={2} justifyContent="flex-start">
+      <Grid container spacing={2} justifyContent="center">
         {modules.map((module, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Paper
@@ -145,9 +158,9 @@ const ModulesGrid = ({ user }) => {
                           color: isDarkMode ? '#FFF' : '#000',
                         },
                       }}
-                      onClick={() => handleSubheadingClick(module.path)}
+                      onClick={() => handleSubheadingClick(subheading.path)}
                     >
-                      {subheading}
+                      {subheading.title}
                     </Button>
                   ))}
                 </Box>

@@ -75,7 +75,7 @@ const ActiveUsers = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/users');
-      setUsers(response.data);
+      setUsers(response.data.reverse()); // Reverse the order to show new users at the top
       setLoading(false);
     } catch (error) {
       console.error('Error fetching users:', error);

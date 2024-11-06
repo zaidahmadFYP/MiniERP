@@ -105,17 +105,52 @@ function App() {
   };
 
   const items = [
+  
     { name: 'Licenses', path: '/Licenses/Licensepage', category: 'Modules > Licenses' },
+    //sub-modules
+    { name: 'Trade Licenses', path: '/Licenses/Licensepage', category: 'Modules > Licenses > Trade Licenses' },
+    { name: 'Staff Medicals', path: '/UserManagement', category: 'Modules > Licenses > Staff Medicals' },
+    { name: 'Toursim Licenses', path: '/UserManagement', category: 'Modules > Licenses > Tourism Licenses' },
+    { name: 'Labour Licenses', path: '/UserManagement', category: 'Modules > Licenses > Labour Licenses' },
+
     { name: 'Approvals', path: '/Approval/Approvalpage', category: 'Modules > Approvals' },
+    //sub-modules
+    { name: 'Outer Spaces', path: '/Approval/Approvalpage', category: 'Modules > Approvals > Outer Spaces' },
+
+
     { name: 'Vehicles', path: '/Vehicles/Vehiclepage', category: 'Modules > Vehicles' },
+    //sub-modules
+    { name: 'Maintenance', path: '/Vehicles/Vehiclepage', category: 'Modules > Vehicles > Maintenance' },
+    { name: 'Route Permits', path: '/Vehicles/Vehiclepage', category: 'Modules > Vehicles > Route Permits' },
+    { name: 'Token Taxes', path: '/Vehicles/Vehiclepage', category: 'Modules > Vehicles > Token Taxes' },
+
     { name: 'User Requests', path: '/UserRequests', category: 'Modules > User Requests' },
+
     { name: 'Health Safety Environment', path: '/Hse/Hse', category: 'Modules > Health Safety Environment' },
+    //sub-modules
+    { name: 'Monthly Inspection', path: '/Hse/Hse', category: 'Modules > Health Safety Environment > Monthly Inspection' },
+    { name: 'Quarterly Audit', path: '/Hse/Hse', category: 'Modules > Health Safety Environment > Monthly Inspection > Quarterly Audit' },
+    { name: 'Training Status', path: '/Hse/Hse', category: 'Modules > Health Safety Environment > Training Status' },
+    { name: 'Incidents', path: '/Hse/Hse', category: 'Modules > Health Safety Environment > Incidents' },
+
+
     { name: 'Taxation', path: '/Taxation/Taxationpage', category: 'Modules > Taxation' },
+    //sub-modules
+    { name: 'Marketing / BillBoards Taxes', path: '/Taxation/Taxationpage', category: 'Modules > Taxation > Marketing / BillBoards Taxes' },
+    { name: 'Profession Taxes', path: '/Taxation/Taxationpage', category: 'Modules > Taxation > Profession Taxes' },
+
     { name: 'Certificates', path: '/Certificate/Certificatepage', category: 'Modules > Certificates' },
+    //sub-modules
+    { name: 'Electric Fitness Test', path: '/Certificate/Certificatepage', category: 'Modules > Certificates > Electric Fitness Test' },
+    
     { name: 'Security', path: '/Security/Securitypage', category: 'Modules > Security' },
+    
     { name: 'Admin Policies and SOPs', path: '/AdminPolicies', category: 'Modules > Admin Policies' },
+    
     { name: 'Rental Agreements', path: '/RentalAgreements', category: 'Modules > Rental Agreements' },
-    { name: 'User Management', path: '/UserManagement', category: 'Modules > User Management' },
+    
+    { name: 'User Management', path: '/UserManagement/ActiveUsers', category: 'Modules > User Management' },
+
   ];
 
   const handleSearch = (query) => {
@@ -124,21 +159,11 @@ function App() {
       if (query) {
         const results = [];
         items.forEach((item) => {
-          // Check if the user has access to this item
-          const hasAccess = user?.registeredModules.some((module) => module.split('_')[0] === item.name);
+          // Check if the user has access to this item (simplified check)
+          const hasAccess = user?.registeredModules.some((module) => module.includes(item.name));
+          // If user has access and the query matches the item name, add it to results
           if (hasAccess && item.name.toLowerCase().includes(query.toLowerCase())) {
             results.push(item);
-          }
-          if (hasAccess && item.subheadings) {
-            item.subheadings.forEach((subheading) => {
-              if (subheading.toLowerCase().includes(query.toLowerCase())) {
-                results.push({
-                  name: subheading,
-                  path: item.path,
-                  category: `${item.category} > ${item.name}`,
-                });
-              }
-            });
           }
         });
         setSearchResults(results);
