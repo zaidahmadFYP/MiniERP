@@ -16,7 +16,7 @@ const Banner = () => {
       }}
     >
       <img
-        src="/images/download.webp"
+        src="/images/muawin_banner.jpg"
         alt="Banner"
         style={{
           width: '110%',

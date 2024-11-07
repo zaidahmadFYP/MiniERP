@@ -21,10 +21,10 @@ const BackgroundImage = styled(Box)({
   left: 0,
   height: "100%",
   width: "100%",
-  backgroundImage: `url(${process.env.PUBLIC_URL}/images/yellow-background-with-icons.webp)`, // Replace with your image path
+  backgroundImage: `url(${process.env.PUBLIC_URL}/images/background.jpg)`, // Replace with your image path
   backgroundSize: "cover",
   backgroundPosition: "center",
-  filter: "blur(2.5px)", // Blurs only the background image
+  //filter: "blur(2.5px)", // Blurs only the background image
   zIndex: 1,
 });
 
@@ -209,8 +209,8 @@ function SignInPage({ onLogin }) {
           </LeftContainer>
           <RightContainer>
             <img
-              src={`${process.env.PUBLIC_URL}/images/cheezious_image_without_rider.webp`}
-              alt="Cheezious Delivery"
+              src={`${process.env.PUBLIC_URL}/images/muawin_signin.jpg`}
+              alt="Cheezious "
               style={{ width: "100%", height: "auto", borderRadius: "30px" }}
             />
           </RightContainer>
