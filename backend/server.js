@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB URI
-const mongoURI = 'mongodb://localhost:27017/mauwinapp';
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/mauwinapp';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });

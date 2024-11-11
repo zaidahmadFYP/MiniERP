@@ -29,6 +29,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import EditLocationAltIcon from '@mui/icons-material/EditLocationAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -41,6 +42,7 @@ import { useZones } from './ZonesComponent';
 import UploadAccounts from './UploadAccounts';
 import EditUserDrawer from './EditUserDrawer';
 import EditAssignedModulesDrawer from './EditAssignedModulesDrawer';
+import EditBranchNameDrawer from './EditBranchNameDrawer';
 
 const ActiveUsers = () => {
   const { zones, addBranch } = useZones();
@@ -62,6 +64,7 @@ const ActiveUsers = () => {
   const [editModulesDrawerOpen, setEditModulesDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [editBranchNameOpen, setEditBranchNameOpen] = useState(false);
 
   const handleUserCreated = () => {
     setSnackbarOpen(true);
@@ -212,6 +215,20 @@ const ActiveUsers = () => {
     return <Typography>Loading...</Typography>;
   }
 
+  const handleEditBranchNameOpen = () => {
+    setEditBranchNameOpen(true);
+  };
+
+  const handleEditBranchNameClose = () => {
+    setEditBranchNameOpen(false);
+  };
+
+  const handleBranchUpdated = () => {
+    fetchUsers(); // Refresh user data or branches as needed
+    setEditBranchNameOpen(false);
+  };
+
+
   return (
     <MainContentWrapper>
       <Box sx={{ maxWidth: '100%', paddingLeft: 0 }}>
@@ -280,6 +297,15 @@ const ActiveUsers = () => {
             onClick={handleBranchDrawerOpen}
           >
             Add a Branch
+          </Button>
+
+          <Button
+            variant="text"
+            startIcon={<EditLocationAltIcon />}
+            sx={{ marginRight: 2, textTransform: 'none', color: '#f15a22' }}
+            onClick={handleEditBranchNameOpen}
+          >
+            Edit Branch Name
           </Button>
 
           <Button
@@ -405,6 +431,11 @@ const ActiveUsers = () => {
         />
 
         <UploadAccounts open={uploadDialogOpen} onClose={handleUploadDialogClose} onUsersAdded={fetchUsers} />
+
+        <EditBranchNameDrawer
+          open={editBranchNameOpen} // Pass the state to control the visibility of the drawer
+          onClose={handleEditBranchNameClose} // Pass the function to handle closing the drawer
+        />
 
         <Snackbar
           open={snackbarOpen}

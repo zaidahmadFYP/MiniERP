@@ -12,7 +12,7 @@ const Banner = () => {
         ml: 6,
         mr: -1,
         padding: 6,
-        // boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.3)', 
+         //boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', 
       }}
     >
       <img
