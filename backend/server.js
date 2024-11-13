@@ -123,6 +123,43 @@ app.get('/api/zones/:zoneName/branches', async (req, res) => {
   }
 });
 
+// API to update a branch name in a specific zone
+app.put('/api/zones/:zoneId/editBranch', async (req, res) => {
+  try {
+    const { zoneId } = req.params;
+    const { oldBranchName, newBranchName } = req.body;
+
+    const zone = await Zone.findById(zoneId);
+    console.log("Fetched Zone:", zone); // Log the zone object to inspect its structure
+
+    if (!zone) {
+      return res.status(404).json({ message: 'Zone not found' });
+    }
+
+    // Find the branch index and update the branch name
+    const branchIndex = zone.branches.indexOf(oldBranchName);
+    console.log("Branch Index:", branchIndex); // Log the branch index to see if it’s found
+
+    if (branchIndex === -1) {
+      return res.status(404).json({ message: 'Branch not found' });
+    }
+
+    if (newBranchName) {
+      // Edit the branch name
+      zone.branches[branchIndex] = newBranchName;
+    } else {
+      // Remove the branch
+      zone.branches.splice(branchIndex, 1);
+    }
+
+    await zone.save();
+
+    res.status(200).json({ message: `Branch ${oldBranchName} updated successfully`, zone });
+  } catch (error) {
+    console.error('Error updating branch:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 //----------------------------------------------------------------------------------------
 
@@ -913,6 +950,25 @@ app.get('/api/announcements/latest', async (req, res) => {
     console.error('Error fetching the latest announcement:', error);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+//---------------------------------------------SESSION TIME OUT----------------------------------------------------------
+
+const jwt = require('jsonwebtoken');
+
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(401).send({ message: 'No token provided.' });
+
+    jwt.verify(token, 'your-secret-key', (err, decoded) => {
+        if (err) return res.status(401).send({ message: 'Failed to authenticate token.' });
+        req.userId = decoded.id;
+        next();
+    });
+};
+
+app.get('/api/auth/check-session', verifyToken, (req, res) => {
+    res.status(200).send({ message: 'Session active' });
 });
 
 //----------------------------------------------ASSIGNED TASK MANAGEMENT ------------------------------------------------

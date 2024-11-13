@@ -224,6 +224,7 @@ const ActiveUsers = () => {
   };
 
   const handleBranchUpdated = () => {
+    console.log("Branch has been updated");
     fetchUsers(); // Refresh user data or branches as needed
     setEditBranchNameOpen(false);
   };
@@ -414,7 +415,7 @@ const ActiveUsers = () => {
 
         <AddUserDrawer open={drawerOpen} onClose={handleDrawerClose} onUserCreated={handleUserCreated} />
 
-        <AddBranchDrawer open={branchDrawerOpen} onClose={handleBranchDrawerClose} />
+        <AddBranchDrawer open={branchDrawerOpen} onClose={handleBranchDrawerClose}  />
 
         <EditUserDrawer
           open={editDrawerOpen}
@@ -434,7 +435,9 @@ const ActiveUsers = () => {
 
         <EditBranchNameDrawer
           open={editBranchNameOpen} // Pass the state to control the visibility of the drawer
+          onBranchUpdated={handleBranchUpdated} 
           onClose={handleEditBranchNameClose} // Pass the function to handle closing the drawer
+
         />
 
         <Snackbar

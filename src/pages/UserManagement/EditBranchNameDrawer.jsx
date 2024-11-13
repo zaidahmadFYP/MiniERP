@@ -34,10 +34,20 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
     }
   }, [open]);
 
+  // Reset form fields when drawer closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedZone('');
+      setBranches([]);
+      setSelectedBranch('');
+      setAction('edit');
+      setNewBranchName('');
+    }
+  }, [open]);
+
   const fetchZones = async () => {
     try {
       const response = await axios.get('/api/zones');
-      console.log("Zones API Response:", response.data); // Debugging: Check API response structure
       setZones(response.data);
     } catch (error) {
       console.error('Error fetching zones:', error);
@@ -48,9 +58,12 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
     const selectedZoneId = event.target.value;
     setSelectedZone(selectedZoneId);
 
-    // Find the branches for the selected zone
     const zone = zones.find((z) => z._id === selectedZoneId);
-    setBranches(zone ? zone.branches : []);
+    if (zone && zone.branches) {
+      setBranches(zone.branches);
+    } else {
+      setBranches([]);
+    }
     setSelectedBranch('');
   };
 
@@ -60,30 +73,51 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
 
   const handleActionChange = (event) => {
     setAction(event.target.value);
-    setNewBranchName(''); // Clear branch name when switching action
+    setNewBranchName('');
   };
 
   const handleSave = async () => {
     if (action === 'edit' && newBranchName) {
       try {
-        await axios.put(`/api/branches/${selectedBranch}`, {
-          name: newBranchName,
+        const formattedBranchName = `Cheezious ${newBranchName.toUpperCase()}`;
+        console.log("Selected Zone ID:", selectedZone);
+        console.log("Old Branch Name:", selectedBranch);
+        console.log("New Branch Name:", formattedBranchName);
+
+        await axios.put(`/api/zones/${selectedZone}/editBranch`, {
+          oldBranchName: selectedBranch,
+          newBranchName: formattedBranchName,
         });
-        onBranchUpdated();
+
+        if (typeof onBranchUpdated === 'function') {
+          onBranchUpdated();
+        }
         setNotificationOpen(true);
+        setSelectedBranch('');
+        onClose();
       } catch (error) {
-        console.error('Error updating branch name:', error);
+        console.error('Error updating branch name:', error.response ? error.response.data : error.message);
       }
     } else if (action === 'remove') {
       try {
-        await axios.delete(`/api/branches/${selectedBranch}`);
-        onBranchUpdated();
+        console.log("Removing branch from Zone ID:", selectedZone);
+        console.log("Branch to Remove:", selectedBranch);
+
+        await axios.put(`/api/zones/${selectedZone}/editBranch`, {
+          oldBranchName: selectedBranch,
+          newBranchName: null,
+        });
+
+        if (typeof onBranchUpdated === 'function') {
+          onBranchUpdated();
+        }
         setNotificationOpen(true);
+        setSelectedBranch('');
+        onClose();
       } catch (error) {
-        console.error('Error removing branch:', error);
+        console.error('Error removing branch:', error.response ? error.response.data : error.message);
       }
     }
-    onClose(); // Close drawer after save
   };
 
   const handleNotificationClose = () => {
@@ -92,7 +126,7 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
-      <Box sx={{ width: 400, padding: 3 }}>
+      <Box sx={{ width: 500, padding: 4, mt: 8 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
           Edit or Remove Branch Name
         </Typography>
@@ -141,20 +175,28 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
             </MenuItem>
             {branches && branches.map((branch, index) => (
               <MenuItem key={index} value={branch}>
-                {branch}
+                {branch || 'Unnamed Branch'}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         {action === 'edit' && (
-          <TextField
-            label="New Branch Name"
-            value={newBranchName}
-            onChange={(e) => setNewBranchName(e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <TextField
+              label="Prefix (Locked)"
+              value="Cheezious"
+              InputProps={{ readOnly: true }}
+              sx={{ mr: 1, flex: 1 }}
+            />
+            <TextField
+              label="New Branch Name"
+              value={newBranchName}
+              onChange={(e) => setNewBranchName(e.target.value.toUpperCase())}
+              fullWidth
+              sx={{ flex: 2 }}
+            />
+          </Box>
         )}
 
         <Button

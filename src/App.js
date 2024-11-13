@@ -9,6 +9,7 @@ import AppBarComponent from './Component/AppBarComponent/AppBarComponent';
 import DrawerComponent from './Component/DrawerComponent/DrawerComponent';
 import MainContent from './Component/MainContent/MainContent';
 import ModulesGrid from './pages/Approval/Modulesgrid/Modulesgrid';
+import SessionTimeout from './SessionTimeout';
 
 // Licenses Import
 import Licensepage from './pages/Licenses/Licensepage';
@@ -95,6 +96,7 @@ function App() {
   const handleLogin = (userData) => {
     setIsAuthenticated(true);
     setUser(userData); // Store the user data upon successful login
+    localStorage.setItem('token', 'your-auth-token');
   };
 
   const handleLogout = () => {
@@ -105,7 +107,7 @@ function App() {
   };
 
   const items = [
-  
+
     { name: 'Licenses', path: '/Licenses/Licensepage', category: 'Modules > Licenses' },
     //sub-modules
     { name: 'Trade Licenses', path: '/Licenses/Licensepage', category: 'Modules > Licenses > Trade Licenses' },
@@ -142,13 +144,13 @@ function App() {
     { name: 'Certificates', path: '/Certificate/Certificatepage', category: 'Modules > Certificates' },
     //sub-modules
     { name: 'Electric Fitness Test', path: '/Certificate/Certificatepage', category: 'Modules > Certificates > Electric Fitness Test' },
-    
+
     { name: 'Security', path: '/Security/Securitypage', category: 'Modules > Security' },
-    
+
     { name: 'Admin Policies and SOPs', path: '/AdminPolicies', category: 'Modules > Admin Policies' },
-    
+
     { name: 'Rental Agreements', path: '/RentalAgreements', category: 'Modules > Rental Agreements' },
-    
+
     { name: 'User Management', path: '/UserManagement/ActiveUsers', category: 'Modules > User Management' },
 
   ];
@@ -200,6 +202,12 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+
+        {/* Integrate SessionTimeout Component */}
+        {isAuthenticated && (
+          <SessionTimeout timeout={15 * 60 * 1000} onLogout={handleLogout} />
+        )}
+
         {isAuthenticated && (
           <AppBarComponent
             open={open}

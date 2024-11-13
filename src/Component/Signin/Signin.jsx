@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, Paper } from "@mui/material";
+import { TextField, Button, Box, Typography, Paper, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
@@ -24,7 +24,6 @@ const BackgroundImage = styled(Box)({
   backgroundImage: `url(${process.env.PUBLIC_URL}/images/background.jpg)`, // Replace with your image path
   backgroundSize: "cover",
   backgroundPosition: "center",
-  //filter: "blur(2.5px)", // Blurs only the background image
   zIndex: 1,
 });
 
@@ -123,6 +122,8 @@ function SignInPage({ onLogin }) {
     }
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const response = await fetch("http://localhost:5000/api/auth/signin", {
         method: "POST",
         headers: {
@@ -135,7 +136,6 @@ function SignInPage({ onLogin }) {
 
       if (response.ok) {
         setError("");
-        // Store user data in localStorage for persistence
         localStorage.setItem("token", data.token); // Assuming token is returned
         localStorage.setItem("user", JSON.stringify(data.user)); // Store user details
 
@@ -153,6 +153,12 @@ function SignInPage({ onLogin }) {
 
   const handleMouseDownPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && email && password) {
+      handleLogin(e);
+    }
   };
 
   return (
@@ -181,6 +187,7 @@ function SignInPage({ onLogin }) {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <StyledTextField
               label="Password"
@@ -189,6 +196,7 @@ function SignInPage({ onLogin }) {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -204,7 +212,14 @@ function SignInPage({ onLogin }) {
               onClick={handleLogin}
               disabled={loading}
             >
-              {loading ? "Logging in..." : "LOGIN"}
+              {loading ? (
+                <>
+                  <CircularProgress size={20} sx={{ color: "#fff", mr: 1 }} />
+                  Logging in...
+                </>
+              ) : (
+                "LOGIN"
+              )}
             </CustomButton>
           </LeftContainer>
           <RightContainer>
