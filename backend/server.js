@@ -161,6 +161,37 @@ app.put('/api/zones/:zoneId/editBranch', async (req, res) => {
   }
 });
 
+// DELETE API to delete a branch from a specific zone
+app.delete('/api/zones/:zoneId/deleteBranch', async (req, res) => {
+  try {
+    const { zoneId } = req.params;
+    const { branchName } = req.body;
+
+    // Find the zone by ID
+    const zone = await Zone.findById(zoneId);
+
+    if (!zone) {
+      return res.status(404).json({ message: 'Zone not found' });
+    }
+
+    // Find the index of the branch to delete
+    const branchIndex = zone.branches.indexOf(branchName);
+
+    if (branchIndex === -1) {
+      return res.status(404).json({ message: 'Branch not found' });
+    }
+
+    // Remove the branch
+    zone.branches.splice(branchIndex, 1);
+    await zone.save();
+
+    res.status(200).json({ message: `Branch ${branchName} removed successfully`, zone });
+  } catch (error) {
+    console.error('Error deleting branch:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 //----------------------------------------------------------------------------------------
 
 
