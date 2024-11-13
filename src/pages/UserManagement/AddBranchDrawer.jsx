@@ -82,7 +82,7 @@ const AddBranchDrawer = ({ open, onClose }) => {
     <>
       <Drawer anchor="right" open={open} onClose={onClose} PaperProps={{ sx: { width: '30%' } }}>
         <Box sx={{ padding: 4 }}>
-          <Typography variant="h4" gutterBottom sx={{ color: '#f15a22', fontWeight: 'bold', mt: 6 }}>
+          <Typography variant="h5" gutterBottom sx={{ color: '#f15a22', fontWeight: 'bold', mt: 8, mb:1 }}>
             Add a Branch
           </Typography>
           <Divider sx={{ mb: 3, borderColor: '#f15a22' }} />

@@ -180,10 +180,10 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
         }}
       >
         <Box sx={{ width: 500, padding: 4, mt: 8 }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, color: '#f15a22'}}>
             Edit or Remove Branch Name
           </Typography>
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ mb: 3, borderColor: '#f15a22' }} />
 
           <FormControl component="fieldset">
             <FormLabel sx={{ color: '#f15a22' }} component="legend">Select Action</FormLabel>
