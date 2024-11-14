@@ -216,9 +216,9 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
 
   // Password generation function
   const generateRandomPassword = () => {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~';
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let password = '';
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 5; i++) {
       password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
     return password;

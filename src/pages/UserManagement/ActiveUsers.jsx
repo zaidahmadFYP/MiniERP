@@ -297,7 +297,7 @@ const ActiveUsers = () => {
             sx={{ marginRight: 2, textTransform: 'none', color: '#f15a22' }}
             onClick={handleBranchDrawerOpen}
           >
-            Add a Branch
+            Add a branch
           </Button>
 
           <Button
@@ -306,7 +306,7 @@ const ActiveUsers = () => {
             sx={{ marginRight: 2, textTransform: 'none', color: '#f15a22' }}
             onClick={handleEditBranchNameOpen}
           >
-            Edit Branch Name
+            Edit branch 
           </Button>
 
           <Button
@@ -315,7 +315,7 @@ const ActiveUsers = () => {
             sx={{ marginRight: 2, textTransform: 'none', color: '#f15a22' }}
             onClick={handleUploadDialogOpen}
           >
-            Upload Accounts
+            Upload accounts
           </Button>
 
           <TextField
