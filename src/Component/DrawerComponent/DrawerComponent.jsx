@@ -16,7 +16,7 @@ import DrawerHeader from '../DrawerHeader/DrawerHeader';
 const drawerWidth = 260;
 
 const openedMixin = (theme) => ({
-  width: drawerWidth,
+  width: 300, // Increased the width from the original 260 to 300
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -120,7 +120,7 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
       ],
     },
     {
-      text: 'HSE',
+      text: 'Health Safety Environment',
       icon: '/images/hse.webp',
       path: '/Hse/Hse',
       submenu: [

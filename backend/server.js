@@ -87,6 +87,21 @@ app.get('/api/zones', async (req, res) => {
   }
 });
 
+app.get('/api/zones/:zoneName/branches', async (req, res) => {
+  const zoneName = req.params.zoneName;
+  try {
+      const zone = await Zone.findOne({ zoneName });
+      if (!zone) {
+          return res.status(404).json({ message: 'Zone not found' });
+      }
+      res.status(200).json(zone.branches);
+  } catch (error) {
+      console.error('Error fetching branches:', error); // Log the error
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+
 // API to add a branch to a specific zone
 app.post('/api/zones/:zoneName/addBranch', async (req, res) => {
   try {
@@ -109,19 +124,6 @@ app.post('/api/zones/:zoneName/addBranch', async (req, res) => {
   }
 });
 
-app.get('/api/zones/:zoneName/branches', async (req, res) => {
-  const zoneName = req.params.zoneName;
-  try {
-      const zone = await Zone.findOne({ zoneName });
-      if (!zone) {
-          return res.status(404).json({ message: 'Zone not found' });
-      }
-      res.status(200).json(zone.branches);
-  } catch (error) {
-      console.error('Error fetching branches:', error); // Log the error
-      res.status(500).json({ message: 'Internal Server Error', error: error.message });
-  }
-});
 
 // API to update a branch name in a specific zone
 app.put('/api/zones/:zoneId/editBranch', async (req, res) => {

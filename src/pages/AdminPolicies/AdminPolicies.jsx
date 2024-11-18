@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback  } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -20,7 +20,7 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
+import HoverPopoverButton from './HoverPopoverButton';
 
 const AdminPolicies = ({ open, user }) => {
   const theme = useTheme();
@@ -78,14 +78,14 @@ const AdminPolicies = ({ open, user }) => {
   // Fetch the files for the specified zone and branch
   const fetchFiles = useCallback(async () => {
     if (!selectedZone || !selectedBranch) return;
-  
+
     setLoading(true);
     try {
       const encodedZone = encodeURIComponent(selectedZone.trim());
       const encodedBranch = encodeURIComponent(selectedBranch.trim());
-  
+
       const response = await fetch(`http://localhost:5000/api/files/adminpolicies/${encodedZone}/${encodedBranch}`);
-  
+
       if (response.ok) {
         const filesData = await response.json();
         setFiles(filesData);
@@ -115,7 +115,7 @@ const AdminPolicies = ({ open, user }) => {
     if (selectedZone && selectedBranch) {
       fetchFiles(); // Fetch files when component mounts or when zone/branch changes
     }
-  }, [selectedZone, selectedBranch,fetchFiles]);
+  }, [selectedZone, selectedBranch, fetchFiles]);
 
   // Handle file upload
   const handleFileSelect = async (file) => {
@@ -137,7 +137,7 @@ const AdminPolicies = ({ open, user }) => {
           setSnackbarMessage(`File "${normalizedFileName}" has been added successfully.`);
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
-        setSnackbarOpen(true); // Ensure snackbar triggers after deletion
+          setSnackbarOpen(true); // Ensure snackbar triggers after deletion
         } else {
           const errorMessage = await response.text();
           console.error('Error uploading file:', response.statusText, errorMessage);
@@ -163,33 +163,33 @@ const AdminPolicies = ({ open, user }) => {
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
     setConfirmDeleteOpen(false); // Close the confirmation dialog immediately
-  
+
     const trimmedFilename = fileToDelete.trim();
     const encodedFilename = encodeURIComponent(trimmedFilename);
     const deleteUrl = `http://localhost:5000/api/files/adminpolicies/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
-  
+
     // Show snackbar right away with success message
     setSnackbarMessage(`File "${trimmedFilename}" is being deleted, Please Click Refresh Icon`);
     setSnackbarSeverity('info');
     setSnackbarOpen(true);
-  
+
     try {
       console.log('DELETE URL:', deleteUrl);  // Debugging log
-  
+
       const response = await fetch(deleteUrl, { method: 'DELETE' });
-  
+
       if (response.ok) {
         setFiles((prevFiles) =>
           prevFiles.filter((file) => file.filename !== trimmedFilename)
         );
-  
+
         // Update snackbar to success after delete
         setSnackbarMessage(`File "${trimmedFilename}" has been deleted successfully.`);
         setSnackbarSeverity('success');
       } else {
         const errorMessage = await response.text();
         console.error('Failed to delete file:', response.statusText, errorMessage);
-  
+
         // Update snackbar to error in case of failure
         setSnackbarMessage('Failed to delete file.');
         setSnackbarSeverity('error');
@@ -199,7 +199,7 @@ const AdminPolicies = ({ open, user }) => {
       setSnackbarMessage('Error occurred while deleting the file.');
       setSnackbarSeverity('error');
     }
-  
+
     setSnackbarOpen(true); // Ensure snackbar opens in all cases
     setFileToDelete(null); // Clear the file to delete after the operation
   };
@@ -265,6 +265,7 @@ const AdminPolicies = ({ open, user }) => {
         }}
       >
         <Grid container spacing={2} sx={{ mb: 3 }} alignItems="center">
+
           {user?.role === 'Admin' && (
             <>
               <Grid item xs={3}>
@@ -335,6 +336,10 @@ const AdminPolicies = ({ open, user }) => {
                 <IconButton onClick={fetchFiles} sx={{ color: '#f15a22' }}>
                   <RefreshIcon />
                 </IconButton>
+
+                {/* Hover Button with Popover */}
+                <HoverPopoverButton />
+
               </Grid>
             </>
           )}

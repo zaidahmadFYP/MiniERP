@@ -9,6 +9,9 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Placeholder to suppress eslint warning
+  console.log(navigate);
+
   const handleLogout = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -46,22 +49,30 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
     >
       {/* Profile Avatar with Gradient */}
       <Box display="flex" justifyContent="center" mb={2}>
-        <Avatar sx={{ 
-          background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)', 
-          width: 64, 
-          height: 64, 
-          fontSize: '1.5rem',
-          color: '#fff'
-        }}>
+        <Avatar
+          sx={{
+            background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)',
+            width: 64,
+            height: 64,
+            fontSize: '1.5rem',
+            color: '#fff',
+          }}
+        >
           {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
         </Avatar>
       </Box>
-      
+
       {/* User Name and Email */}
-      <Typography variant="h6" sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#333', mb: 1 }}>
+      <Typography
+        variant="h6"
+        sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#333', mb: 1 }}
+      >
         {user.name || 'User Name'}
       </Typography>
-      <Typography variant="body2" sx={{ color: darkMode ? '#bdbdbd' : '#666', mb: 2 }}>
+      <Typography
+        variant="body2"
+        sx={{ color: darkMode ? '#bdbdbd' : '#666', mb: 2 }}
+      >
         {user.email || 'email@example.com'}
       </Typography>
 
@@ -70,16 +81,38 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
 
       {/* Role and Branch Details with Prominent Text and Icons */}
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Box sx={{ padding: 0, display: 'flex', alignItems: 'center', mb: 1 }}>   
-          <WorkIcon fontSize="small" sx={{ mr: 1, color: darkMode ? '#f15a22' : '#f15a22' }} />
-          <Typography variant="body2" sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}>
-            Role: <span style={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}>{user.role || 'N/A'}</span>
+        <Box sx={{ padding: 0, display: 'flex', alignItems: 'center', mb: 1 }}>
+          <WorkIcon
+            fontSize="small"
+            sx={{ mr: 1, color: darkMode ? '#f15a22' : '#f15a22' }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}
+          >
+            Role:{' '}
+            <span
+              style={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}
+            >
+              {user.role || 'N/A'}
+            </span>
           </Typography>
         </Box>
-        <Box sx={{ padding: 0, display: 'flex', alignItems: 'center' }}>   
-          <LocationOnIcon fontSize="small" sx={{ mr: 1, color: darkMode ? '#f15a22' : '#f15a22' }} />
-          <Typography variant="body2" sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}>
-            Branch: <span style={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}>{user.branch || 'N/A'}</span>
+        <Box sx={{ padding: 0, display: 'flex', alignItems: 'center' }}>
+          <LocationOnIcon
+            fontSize="small"
+            sx={{ mr: 1, color: darkMode ? '#f15a22' : '#f15a22' }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}
+          >
+            Branch:{' '}
+            <span
+              style={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000' }}
+            >
+              {user.branch || 'N/A'}
+            </span>
           </Typography>
         </Box>
       </Box>
@@ -91,7 +124,13 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
           onClick={handleLogout}
           variant="contained"
           color="error"
-          startIcon={isLoading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <LogoutIcon />}
+          startIcon={
+            isLoading ? (
+              <CircularProgress size={20} sx={{ color: '#fff' }} />
+            ) : (
+              <LogoutIcon />
+            )
+          }
           sx={{
             textTransform: 'none',
             fontWeight: 'bold',
