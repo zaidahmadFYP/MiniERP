@@ -102,7 +102,7 @@ const ProfileMenu = ({ anchorEl, isOpen, onClose, user, darkMode }) => {
           }}
           disabled={isLoading}
         >
-          {isLoading ? 'Logging out...' : 'Logout'}
+          {isLoading ? 'Logging out..' : 'Logout'}
         </Button>
       </Box>
     </Menu>

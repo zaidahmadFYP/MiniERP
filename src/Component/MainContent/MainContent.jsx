@@ -24,7 +24,7 @@ const MainContent = ({ user }) => {
       { name: 'Licenses', image: '/images/licenses.webp' },
       { name: 'Approvals', image: '/images/approved.webp' },
       { name: 'Vehicles', image: '/images/vehicle.webp' },
-      { name: 'User Requests', image: '/images/user_icon.webp' },
+      { name: 'User Tickets', image: '/images/user_icon.webp' },
       { name: 'Health Safety Environment', image: '/images/hse.webp' },
       { name: 'Taxation', image: '/images/taxation.webp' },
       { name: 'Certificates', image: '/images/certificate.webp' },

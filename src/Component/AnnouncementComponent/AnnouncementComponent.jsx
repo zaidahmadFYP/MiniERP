@@ -6,10 +6,10 @@ const MajorAnnouncements = () => {
   return (
     <Paper elevation={3} sx={{ padding: '16px', marginBottom: '16px' }}>
       <Typography variant="h6" gutterBottom>
-        Major Announcements
+        Announcements
       </Typography>
       <Typography variant="body1">
-        No new major announcements.
+        No new announcements.
       </Typography>
     </Paper>
   );

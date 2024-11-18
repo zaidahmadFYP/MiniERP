@@ -70,7 +70,7 @@ const SessionTimeout = ({ timeout = 15 * 60 * 1000, onLogout }) => {
             </DialogTitle>
             <DialogActions style={{ justifyContent: 'flex-end', paddingBottom: '16px', paddingRight: '16px' }}>
                 <StyledButton onClick={handleClose}>
-                    LOGIN AGAIN
+                    Login
                 </StyledButton>
             </DialogActions>
         </StyledDialog>

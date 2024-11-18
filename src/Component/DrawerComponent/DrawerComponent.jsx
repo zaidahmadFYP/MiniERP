@@ -166,7 +166,7 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
       icon: '/images/user_management.webp',
       path: '/UserManagement',
     },
-    { text: 'User Requests', icon: '/images/user_icon.webp', path: '/UserRequests' },
+    { text: 'User Tickets', icon: '/images/user_icon.webp', path: '/UserRequests' },
   ];
 
   const filteredItems = items.filter((item) => {
