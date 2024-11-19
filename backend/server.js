@@ -23,51 +23,6 @@ const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/mauwinapp';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
-//-----------------------------SUPER ADMIN ACCESS-------------------------------------
-
-const initializeSuperAdmin = async () => {
-  const superAdminEmail = 'superadmin@cheezious.com';
-  const superAdminPassword = 'SuperSecurePassword123'; // Use environment variables in production
-
-  try {
-    const existingSuperAdmin = await User.findOne({ email: superAdminEmail });
-
-    if (!existingSuperAdmin) {
-      const hashedPassword = await bcrypt.hash(superAdminPassword, 10);
-      const superAdmin = new User({
-        name: 'Super Admin',
-        displayName: 'Super Admin',
-        username: 'superadmin',
-        email: superAdminEmail,
-        password: hashedPassword,
-        role: 'Super Admin',
-        zone: 'All', // Super Admin has access to all zones
-        branch: 'All', // Super Admin has access to all branches
-        registeredModules: [], // Super Admin can manage all modules
-      });
-
-      await superAdmin.save();
-      console.log('Super Admin initialized.');
-    } else {
-      console.log('Super Admin already exists.');
-    }
-  } catch (error) {
-    console.error('Error initializing Super Admin:', error);
-  }
-};
-
-// Call this function after DB connection
-db.once('open', async () => {
-  console.log('MongoDB connected');
-  gridfsBucket = new GridFSBucket(db.db, { bucketName: 'uploads' });
-  console.log('GridFS initialized');
-
-  await initializeSuperAdmin(); // Initialize the Super Admin
-  await initializeZones();      // Initialize zones
-});
-
-//-------------------------------------------------------------------------------------
-
 const db = mongoose.connection;
 let gridfsBucket;
 
