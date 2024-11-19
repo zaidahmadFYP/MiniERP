@@ -43,6 +43,7 @@ import UploadAccounts from './UploadAccounts';
 import EditUserDrawer from './EditUserDrawer';
 import EditAssignedModulesDrawer from './EditAssignedModulesDrawer';
 import EditBranchNameDrawer from './EditBranchNameDrawer';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const ActiveUsers = () => {
   const { zones, addBranch } = useZones();
@@ -65,6 +66,9 @@ const ActiveUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [editBranchNameOpen, setEditBranchNameOpen] = useState(false);
+
+  const [passwordCopiedSnackbarOpen, setPasswordCopiedSnackbarOpen] = useState(false);
+  const [passwordResetSnackbarOpen, setPasswordResetSnackbarOpen] = useState(false); // For reset password
 
   const handleUserCreated = () => {
     setSnackbarOpen(true);
@@ -169,9 +173,9 @@ const ActiveUsers = () => {
   };
 
   const generateRandomPassword = () => {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~';
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let password = '';
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 5; i++) {
       password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
     return password;
@@ -194,13 +198,25 @@ const ActiveUsers = () => {
   };
 
   const handleResetPassword = async (userId) => {
+    // Generate a new random password
     const newPassword = generateRandomPassword();
-    console.log('Reset password for:', userId, 'New Password:', newPassword);
-
     try {
-      await axios.put(`http://localhost:5000/api/users/${userId}/resetPassword`, { newPassword });
-      setResetPassword(newPassword);
-      setResetSnackbarOpen(true);
+      // Send the reset request to the server
+      const response = await axios.put(`http://localhost:5000/api/users/${userId}/resetPassword`, {
+        newPassword,
+      });
+
+      const updatedUser = response.data.user;
+
+      // Update the state with the new password for the specific user
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === userId ? { ...user, plainPassword: updatedUser.plainPassword } : user
+        )
+      );
+
+      // Show the "Password Reset Successfully" snackbar
+      setPasswordResetSnackbarOpen(true);
     } catch (error) {
       console.error('Error resetting password:', error);
     }
@@ -306,7 +322,7 @@ const ActiveUsers = () => {
             sx={{ marginRight: 2, textTransform: 'none', color: '#f15a22' }}
             onClick={handleEditBranchNameOpen}
           >
-            Edit branch 
+            Edit branch
           </Button>
 
           <Button
@@ -335,37 +351,52 @@ const ActiveUsers = () => {
           />
         </Toolbar>
 
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
+        <TableContainer component={Paper} sx={{ mt: 2, maxWidth: '100%' }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
+                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '12px' }}>
                   <Checkbox
                     checked={selectedUsers.length === users.length && users.length > 0}
                     onChange={handleSelectAllUsers}
                   />
                 </TableCell>
-                <TableCell>Display Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Branch</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell>Action</TableCell>
+                <TableCell align="left" sx={{ fontWeight: 'bold', padding: '12px' }}>Display Name</TableCell>
+                <TableCell align="left" sx={{ fontWeight: 'bold', padding: '12px' }}>Email</TableCell>
+                <TableCell align="left" sx={{ fontWeight: 'bold', padding: '12px' }}>Branch</TableCell>
+                <TableCell align="left" sx={{ fontWeight: 'bold', padding: '12px' }}>Role</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '12px' }}>Generated Password</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', padding: '12px' }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user._id}>
-                  <TableCell padding="checkbox">
+                  <TableCell align="center" sx={{ padding: '12px' }}>
                     <Checkbox
                       checked={selectedUsers.includes(user._id)}
                       onChange={() => handleSelectUser(user._id)}
                     />
                   </TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.branch || 'N/A'}</TableCell>
-                  <TableCell>{user.role || 'N/A'}</TableCell>
-                  <TableCell>
+                  <TableCell align="left" sx={{ padding: '12px' }}>{user.name}</TableCell>
+                  <TableCell align="left" sx={{ padding: '12px' }}>{user.email}</TableCell>
+                  <TableCell align="left" sx={{ padding: '12px' }}>{user.branch || 'N/A'}</TableCell>
+                  <TableCell align="left" sx={{ padding: '12px' }}>{user.role || 'N/A'}</TableCell>
+                  <TableCell align="center" sx={{ padding: '12px' }}>
+                    {user.plainPassword ? (
+                      <IconButton
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.plainPassword); // Copy the password to clipboard
+                          setPasswordCopiedSnackbarOpen(true); // Show the correct snackbar
+                        }}
+                      >
+                        <ContentCopyIcon sx={{ color: '#f15a22' }} />
+                      </IconButton>
+                    ) : (
+                      'N/A'
+                    )}
+                  </TableCell>
+                  <TableCell align="center" sx={{ padding: '12px' }}>
                     <IconButton onClick={(event) => handleEditClick(event, user)}>
                       <EditIcon />
                     </IconButton>
@@ -415,7 +446,7 @@ const ActiveUsers = () => {
 
         <AddUserDrawer open={drawerOpen} onClose={handleDrawerClose} onUserCreated={handleUserCreated} />
 
-        <AddBranchDrawer open={branchDrawerOpen} onClose={handleBranchDrawerClose}  />
+        <AddBranchDrawer open={branchDrawerOpen} onClose={handleBranchDrawerClose} />
 
         <EditUserDrawer
           open={editDrawerOpen}
@@ -435,10 +466,41 @@ const ActiveUsers = () => {
 
         <EditBranchNameDrawer
           open={editBranchNameOpen} // Pass the state to control the visibility of the drawer
-          onBranchUpdated={handleBranchUpdated} 
+          onBranchUpdated={handleBranchUpdated}
           onClose={handleEditBranchNameClose} // Pass the function to handle closing the drawer
 
         />
+
+        <Snackbar
+          open={passwordResetSnackbarOpen}
+          autoHideDuration={3000}
+          onClose={() => setPasswordResetSnackbarOpen(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert
+            onClose={() => setPasswordResetSnackbarOpen(false)}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            Password reset successfully!
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={passwordCopiedSnackbarOpen}
+          autoHideDuration={3000}
+          onClose={() => setPasswordCopiedSnackbarOpen(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert
+            onClose={() => setPasswordCopiedSnackbarOpen(false)}
+            severity="info"
+            sx={{ width: '100%' }}
+          >
+            Password copied to clipboard!
+          </Alert>
+        </Snackbar>
+
 
         <Snackbar
           open={snackbarOpen}

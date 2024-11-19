@@ -205,15 +205,16 @@ const userSchema = new mongoose.Schema({
   displayName: String,
   username: {
     type: String,
-    required: true, // Ensure username is required
-    unique: true    // Ensure username is unique
+    required: true,
+    unique: true
   },
   email: {
     type: String,
     required: true,
     unique: true
   },
-  password: String,
+  password: String, // Hashed password
+  plainPassword: String, // New field for storing plain password
   role: String,
   zone: String,
   branch: String,
@@ -227,49 +228,43 @@ const bcrypt = require('bcrypt');
 
 app.post('/api/users', async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Log to see what is being received
-
     const { firstName, lastName, displayName, username, password, role, zone, branch, modules } = req.body;
 
-    // Validate the required fields
     if (!firstName || !lastName || !displayName || !username || !password || !role || !zone || !branch) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Create the email field by appending the domain to the username
     const email = `${username}@cheezious.com`;
 
-    // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already exists' });
     }
 
-    // Hash the password before saving it
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user object
     const newUser = new User({
       name: `${firstName} ${lastName}`,
       displayName,
-      username, // Store the username
-      email,    // Store the generated email
+      username,
+      email,
       password: hashedPassword,
+      plainPassword: password, // Save the plain password
       role,
       zone,
       branch,
       registeredModules: modules
     });
 
-    // Save the user to the database
     await newUser.save();
 
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
-    console.error('Error creating user:', error.stack); // Log the error stack for debugging
+    console.error('Error creating user:', error.stack);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
+
 
 app.post('/api/auth/signin', async (req, res) => {
   try {
@@ -313,11 +308,10 @@ app.post('/api/auth/signin', async (req, res) => {
 });
 
 
-
 app.get('/api/users', async (req, res) => {
   try {
-    const users = await User.find(); // Retrieve all users from the database
-    res.status(200).json(users); // Send the list of users as the response
+    const users = await User.find(); // Fetch all users
+    res.status(200).json(users); // Include plainPassword in the response
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Server error' });
@@ -458,11 +452,18 @@ app.delete('/api/users/:id', async (req, res) => {
 app.put('/api/users/:id/resetPassword', async (req, res) => {
   try {
     const { newPassword } = req.body;
-    const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash the new password
 
+    if (!newPassword) {
+      return res.status(400).json({ message: 'New password is required' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update both hashed and plain passwords in the database
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { password: hashedPassword },
+      { password: hashedPassword, plainPassword: newPassword },
       { new: true }
     );
 
@@ -473,7 +474,7 @@ app.put('/api/users/:id/resetPassword', async (req, res) => {
     res.status(200).json({ message: 'Password reset successfully', user: updatedUser });
   } catch (error) {
     console.error('Error resetting password:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
