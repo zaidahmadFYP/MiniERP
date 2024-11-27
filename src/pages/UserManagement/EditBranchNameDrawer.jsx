@@ -131,7 +131,7 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
   const handleSave = async () => {
     if (action === 'edit' && newBranchName) {
       try {
-        const formattedBranchName = `Cheezious ${newBranchName.toUpperCase()}`;
+        const formattedBranchName = `Cheezious ${newBranchName}`;
         await axios.put(`/api/zones/${selectedZone}/editBranch`, {
           oldBranchName: selectedBranch,
           newBranchName: formattedBranchName,
@@ -269,7 +269,7 @@ const EditBranchNameDrawer = ({ open, onClose, onBranchUpdated }) => {
               <TextField 
                 label="New Branch Name" 
                 value={newBranchName} 
-                onChange={(e) => setNewBranchName(e.target.value.toUpperCase())} 
+                onChange={(e) => setNewBranchName(e.target.value)} 
                 fullWidth 
                 sx={{ flex: 2 }}
                 InputLabelProps={{

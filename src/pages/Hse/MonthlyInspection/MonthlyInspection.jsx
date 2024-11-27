@@ -22,7 +22,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
 
-const ExpiryofCylinders = ({ open, user }) => {
+const MonthlyInspection = ({ open, user }) => {
   const theme = useTheme();
   const headingColor = theme.palette.mode === 'dark' ? '#f15a22' : '#000000';
   const [files, setFiles] = useState([]); // State for files
@@ -451,4 +451,4 @@ const ExpiryofCylinders = ({ open, user }) => {
   );
 };
 
-export default ExpiryofCylinders;
+export default MonthlyInspection;

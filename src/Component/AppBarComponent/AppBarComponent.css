@@ -81,3 +81,18 @@
     border-right: 10px solid transparent;
      border-bottom: 10px solid #fff; *
   } */
+
+  /* AppBarComponent.css */
+.app-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+@media (max-width: 768px) {
+  .app-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

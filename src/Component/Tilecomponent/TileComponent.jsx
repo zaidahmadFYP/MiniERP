@@ -52,18 +52,19 @@ const Tile = ({ name, image }) => {
   };
 
   return (
-    <Tooltip title={name} arrow enterDelay={900} placement="top">
+    <Tooltip title={name} arrow enterDelay={700} placement="top">
       <Paper
+        aria-label={`Navigate to ${name}`}
         sx={{
           padding: 1,
           cursor: 'pointer',
           transition: 'transform 0.1s ease-in-out',
           position: 'relative',
-          height: '80px',
+          height: { xs: '60px', sm: '70px', md: '80px' }, // Adjust height based on screen size
           display: 'flex',
           alignItems: 'center',
-          boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
           justifyContent: 'flex-start',
+          boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
           borderRadius: '10px',
           backgroundColor: isDarkMode ? '#333' : '#FFF',
           '&:hover': {
@@ -76,14 +77,14 @@ const Tile = ({ name, image }) => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            paddingLeft: 2,
+            paddingLeft: { xs: 1, sm: 2 }, // Adjust padding dynamically
           }}
         >
           <img
             src={image}
             alt={name}
             style={{
-              width: '40px',
+              width: '40px', // Keep the size constant or adjust as needed
               height: '40px',
               marginRight: '15px',
             }}
@@ -91,7 +92,7 @@ const Tile = ({ name, image }) => {
           <Typography
             variant="body1"
             sx={{
-              fontSize: '15px',
+              fontSize: { xs: '13px', sm: '15px' }, // Smaller font on mobile
               fontWeight: 'bold',
               fontFamily: 'Encode Sans',
               color: isDarkMode ? '#FFF' : '#000',

@@ -275,12 +275,12 @@ function App() {
           <Route path="/Vehicles/Wah" element={isAuthenticated ? <Wah user={user} /> : <Navigate to="/login" />} />
 
           <Route path="/Hse/Hse" element={isAuthenticated ? <Hse user={user} open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/MonthlyInspection" element={isAuthenticated ? <MonthlyInspection open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/QuarterlyAudit" element={isAuthenticated ? <QuarterlyAudit open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/ExpiryofCylinders" element={isAuthenticated ? <ExpiryofCylinders open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/Fatal" element={isAuthenticated ? <Fatal open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/LostTimeInjury" element={isAuthenticated ? <LostTimeInjury open={open} /> : <Navigate to="/login" />} />
-          <Route path="/Hse/RestrictedWorkInjury" element={isAuthenticated ? <RestrictedWorkInjury open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/MonthlyInspection" element={isAuthenticated ? <MonthlyInspection user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/QuarterlyAudit" element={isAuthenticated ? <QuarterlyAudit user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/ExpiryofCylinders" element={isAuthenticated ? <ExpiryofCylinders user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/Fatal" element={isAuthenticated ? <Fatal user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/LostTimeInjury" element={isAuthenticated ? <LostTimeInjury user={user} open={open} /> : <Navigate to="/login" />} />
+          <Route path="/Hse/RestrictedWorkInjury" element={isAuthenticated ? <RestrictedWorkInjury user={user} open={open} /> : <Navigate to="/login" />} />
           <Route path="/Hse/FireSafety" element={isAuthenticated ? <FireSafety user={user} open={open} /> : <Navigate to="/login" />} />
 
           <Route path="/Taxation/Taxationpage" element={isAuthenticated ? <Taxationpage user={user} open={open} /> : <Navigate to="/login" />} />

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, Paper, CircularProgress } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
@@ -10,9 +17,9 @@ import IconButton from "@mui/material/IconButton";
 // Styled components
 const BackgroundWrapper = styled(Box)({
   position: "relative",
-  height: "100vh",
+  height: "100%", // Allow it to take full screen height
   width: "100%",
-  overflow: "hidden",
+  overflow: "auto", // Enable scrolling for the whole wrapper, especially on mobile
 });
 
 const BackgroundImage = styled(Box)({
@@ -22,47 +29,72 @@ const BackgroundImage = styled(Box)({
   height: "100%",
   width: "100%",
   backgroundImage: `url(${process.env.PUBLIC_URL}/images/background.jpg)`, // Replace with your image path
-  backgroundSize: "cover",
+  backgroundSize: "cover", // Cover ensures the image covers the whole background
   backgroundPosition: "center",
   zIndex: 1,
+  backgroundAttachment: "fixed", // Keep the background fixed on scroll for better experience
 });
 
 const ContentContainer = styled(Box)({
   position: "relative",
   zIndex: 2,
-  height: "100vh",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  padding: "10px", // Add padding for smaller screens
+  minHeight: "100vh", // Ensure the container takes at least the full viewport height
+  height: "auto", // Allow it to grow if needed
+  overflowY: "auto", // Enable vertical scrolling if content exceeds screen height
 });
 
-const CustomPaper = styled(Paper)({
+const CustomPaper = styled(Paper)(({ theme }) => ({
   padding: "20px",
   borderRadius: "12px",
-  width: "90%",
-  maxWidth: "1000px",
-  height: "auto",
+  width: "100%", // Full width for mobile
+  maxWidth: "600px", // Adjust maximum width for better mobile compatibility
+  height: "auto", // Make sure height is dynamic based on content
   display: "flex",
+  flexDirection: "column", // Stack content on mobile
   alignItems: "center",
   boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
   overflow: "hidden",
   backgroundColor: "#ffffff",
-});
+  [theme.breakpoints.up("sm")]: {
+    flexDirection: "row", // Side-by-side layout on larger screens
+    maxWidth: "1000px",
+  },
+}));
 
 const LeftContainer = styled(Box)({
   flex: 1,
   padding: "20px",
+  width: "100%", // Full width on mobile
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
 });
-
-const RightContainer = styled(Box)({
+const RightContainer = styled(Box)(({ theme }) => ({
   flex: 1,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  padding: "0px",
-  height: "100%",
+  padding: "10px",
+  width: "100%", // Full width on mobile
+  height: "auto",
+  [theme.breakpoints.up("sm")]: {
+    height: "100%",
+  },
+}));
+
+const ResponsiveImage = styled("img")({
+  width: "100%",
+  height: "auto",
+  borderRadius: "10px",
+  marginBottom: "15px",
+  objectFit: "cover", // Ensure the image scales properly
 });
+
 
 const CustomButton = styled(Button)({
   marginTop: "20px",
@@ -166,13 +198,25 @@ function SignInPage({ onLogin }) {
       <BackgroundImage />
       <ContentContainer>
         <CustomPaper elevation={3}>
+          <RightContainer>
+            <img
+              src={`${process.env.PUBLIC_URL}/images/muawin_signin.jpg`}
+              alt="Cheezious"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "10px",
+                marginBottom: "15px",
+              }}
+            />
+          </RightContainer>
           <LeftContainer>
             <img
               src={`${process.env.PUBLIC_URL}/images/logo.webp`}
               alt="Logo"
               style={{ width: "80px", marginBottom: "5px" }}
             />
-            <Typography variant="h4" component="h1" gutterBottom>
+            <Typography variant="h5" component="h1" gutterBottom>
               Sign-in to Muawin
             </Typography>
             <Rectangle />
@@ -222,13 +266,6 @@ function SignInPage({ onLogin }) {
               )}
             </CustomButton>
           </LeftContainer>
-          <RightContainer>
-            <img
-              src={`${process.env.PUBLIC_URL}/images/muawin_signin.jpg`}
-              alt="Cheezious "
-              style={{ width: "100%", height: "auto", borderRadius: "30px" }}
-            />
-          </RightContainer>
         </CustomPaper>
       </ContentContainer>
     </BackgroundWrapper>

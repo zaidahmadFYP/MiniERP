@@ -102,7 +102,7 @@ const FileTable = ({ files, onDelete, user  }) => {
                 <Typography
                   variant="body2"
                   sx={{ color: filePathColor, textDecoration: 'underline', transition: 'color 0.3s ease-in-out' }} // Added transition
-                >{`HSE/QTA/${formatFilePath(getCleanFileName(file.filename))}/${file.fileNumber}`}</Typography>
+                >{`HSE/QAT/${formatFilePath(getCleanFileName(file.filename))}/${file.fileNumber}`}</Typography>
               </TableCell>
 
               {/* -------------- */}

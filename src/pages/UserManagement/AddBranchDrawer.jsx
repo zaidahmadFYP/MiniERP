@@ -50,7 +50,7 @@ const AddBranchDrawer = ({ open, onClose }) => {
   };
 
   const handleBranchNameChange = (e) => {
-    setBranchName(e.target.value.toUpperCase()); // Ensure branch name is in uppercase
+    setBranchName(e.target.value); // Ensure branch name is in uppercase
   };
 
   const handleAddBranch = () => {

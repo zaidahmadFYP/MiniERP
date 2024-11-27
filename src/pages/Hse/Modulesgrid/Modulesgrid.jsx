@@ -24,7 +24,7 @@ const ModulesGrid = ({ user }) => {
         subheadings: [],
       },
       {
-        name: 'Health Safety Environment_Quaterly Audit',
+        name: 'Health Safety Environment_Quarterly Audit',
         image: '/images/folder.webp',
         path: '/Hse/QuarterlyAudit',
         subheadings: [],

@@ -84,7 +84,7 @@ const QuarterlyAudit = ({ open, user }) => {
       const encodedZone = encodeURIComponent(selectedZone.trim());
       const encodedBranch = encodeURIComponent(selectedBranch.trim());
   
-      const response = await fetch(`http://localhost:5000/api/files/hse-monthlyinspection/${encodedZone}/${encodedBranch}`);
+      const response = await fetch(`http://localhost:5000/api/files/hse-quarterlyaudit/${encodedZone}/${encodedBranch}`);
   
       if (response.ok) {
         const filesData = await response.json();
@@ -127,7 +127,7 @@ const QuarterlyAudit = ({ open, user }) => {
       formData.append('file', new File([file], normalizedFileName, { type: file.type }));
 
       try {
-        const response = await fetch(`http://localhost:5000/api/files/hse-monthlyinspection/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}`, {
+        const response = await fetch(`http://localhost:5000/api/files/hse-quarterlyaudit/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}`, {
           method: 'POST',
           body: formData,
         });
@@ -166,7 +166,7 @@ const QuarterlyAudit = ({ open, user }) => {
   
     const trimmedFilename = fileToDelete.trim();
     const encodedFilename = encodeURIComponent(trimmedFilename);
-    const deleteUrl = `http://localhost:5000/api/files/hse-monthlyinspection/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
+    const deleteUrl = `http://localhost:5000/api/files/hse-quarterlyaudit/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
   
     // Show snackbar right away with success message
     setSnackbarMessage(`File "${trimmedFilename}" is being deleted, Please Click Refresh Icon`);
@@ -242,7 +242,7 @@ const QuarterlyAudit = ({ open, user }) => {
           paddingBottom: '10px',
         }}
       >
-        HSE/MONTHLY INSPECTION
+        HSE/QUARTERLY AUDIT
       </Typography>
       <Typography
         variant="subtitle1"
