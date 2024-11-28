@@ -44,6 +44,9 @@ import EditUserDrawer from './EditUserDrawer';
 import EditAssignedModulesDrawer from './EditAssignedModulesDrawer';
 import EditBranchNameDrawer from './EditBranchNameDrawer';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import HoverPopoverButton from './HoverPopoverButton';
+
+
 
 const ActiveUsers = () => {
   const { zones, addBranch } = useZones();
@@ -334,6 +337,8 @@ const ActiveUsers = () => {
             Upload accounts
           </Button>
 
+                
+
           <TextField
             variant="outlined"
             size="small"
@@ -349,6 +354,8 @@ const ActiveUsers = () => {
               ),
             }}
           />
+            {/* Hover Button with Popover */}
+            <HoverPopoverButton />
         </Toolbar>
 
         <TableContainer component={Paper} sx={{ mt: 2, maxWidth: '100%' }}>

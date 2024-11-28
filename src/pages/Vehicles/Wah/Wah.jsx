@@ -20,7 +20,7 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
+import HoverPopoverButton from './HoverPopoverButton';
 
 const Wah = ({ open, user }) => {
   const theme = useTheme();
@@ -336,6 +336,11 @@ const Wah = ({ open, user }) => {
                 <IconButton onClick={fetchFiles} sx={{ color: '#f15a22' }}>
                   <RefreshIcon />
                 </IconButton>
+
+                {/* Hover Button with Popover */}
+                <HoverPopoverButton />
+
+                
               </Grid>
             </>
           )}
@@ -368,6 +373,8 @@ const Wah = ({ open, user }) => {
                 <IconButton onClick={fetchFiles} sx={{ color: '#f15a22' }}>
                   <RefreshIcon />
                 </IconButton>
+
+                
               </Grid>
             </>
           )}
