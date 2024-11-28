@@ -46,3 +46,37 @@
   }
 }
 
+@font-face {
+  font-family: 'Encode Sans';
+  src: url('/Fonts/EncodeSansCompressed-600-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cocon';
+  src: url('/Fonts/CoconRegularFont.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Encode Sans';
+  src: url('/Fonts/EncodeSansCompressed-700-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TanseekModernW20';
+  src: url('/fonts/TanseekModernW20-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TanseekModernW20';
+  src: url('/fonts/TanseekModernW20-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
