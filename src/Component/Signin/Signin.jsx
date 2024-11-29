@@ -50,29 +50,30 @@ const ContentContainer = styled(Box)({
 const CustomPaper = styled(Paper)(({ theme }) => ({
   padding: "20px",
   borderRadius: "12px",
-  width: "100%", // Full width for mobile
-  maxWidth: "600px", // Adjust maximum width for better mobile compatibility
-  height: "auto", // Make sure height is dynamic based on content
-  display: "flex",
-  flexDirection: "column", // Stack content on mobile
-  alignItems: "center",
-  boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-  overflow: "hidden",
-  backgroundColor: "#ffffff",
-  [theme.breakpoints.up("sm")]: {
-    flexDirection: "row", // Side-by-side layout on larger screens
-    maxWidth: "1000px",
-  },
-}));
-
-const LeftContainer = styled(Box)({
-  flex: 1,
-  padding: "20px",
-  width: "100%", // Full width on mobile
+  width: "100%",
+  maxWidth: "600px",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-});
+  boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+  backgroundColor: "#ffffff",
+  overflow: "hidden",
+  [theme.breakpoints.up("sm")]: {
+    flexDirection: "row", // Side-by-side layout for larger screens
+    maxWidth: "1000px",
+  },
+}));
+const LeftContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  padding: "10px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px 10px",
+  },
+}));
+
 const RightContainer = styled(Box)(({ theme }) => ({
   flex: 1,
   display: "flex",
@@ -80,23 +81,23 @@ const RightContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: "10px",
-  width: "100%", // Full width on mobile
-  height: "auto",
-  [theme.breakpoints.up("sm")]: {
-    height: "100%",
+  [theme.breakpoints.down("sm")]: {
+    padding: "10px 0",
   },
 }));
 
-const ResponsiveImage = styled("img")({
+const ResponsiveImage = styled("img")(({ theme }) => ({
   width: "100%",
   height: "auto",
   borderRadius: "10px",
   marginBottom: "15px",
-  objectFit: "cover", // Ensure the image scales properly
-});
+  objectFit: "cover",
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: "10px",
+  },
+}));
 
-
-const CustomButton = styled(Button)({
+const CustomButton = styled(Button)(({ theme }) => ({
   marginTop: "20px",
   borderRadius: "30px",
   width: "100%",
@@ -106,9 +107,12 @@ const CustomButton = styled(Button)({
   "&:hover": {
     backgroundColor: "#d14e1d",
   },
-});
+  [theme.breakpoints.down("sm")]: {
+    padding: "8px 0",
+  },
+}));
 
-const StyledTextField = styled(TextField)({
+const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: "20px",
   width: "100%",
   "& label.Mui-focused": {
@@ -125,7 +129,10 @@ const StyledTextField = styled(TextField)({
       borderColor: "#000000",
     },
   },
-});
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: "15px",
+  },
+}));
 
 const Rectangle = styled(Box)({
   width: "80px",
