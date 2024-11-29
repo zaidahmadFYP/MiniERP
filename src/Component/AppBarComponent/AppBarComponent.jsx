@@ -77,10 +77,10 @@ const AppBarComponent = ({
             edge="start"
             className={`${drawerRotating ? 'scale-up' : ''} ${highlightedIcon === 'drawer' ? 'highlighted' : ''}`}
             sx={{
-              marginRight: 1,
+              marginRight: 0.5,
               display: 'flex',
               alignItems: 'center',
-              padding: '12px',
+              padding: '8px',
               '&:hover': {
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
               },
@@ -90,10 +90,10 @@ const AppBarComponent = ({
               src="/images/dotsmenu.svg"
               alt="Menu Icon"
               style={{
-                width: 25,
-                height: 25,
+                width: 23,
+                height: 23,
                 filter: darkMode ? 'invert(0)' : 'invert(1)',
-                marginRight: '8px',
+                marginRight: '1px',
               }}
             />
           </IconButton>
@@ -110,13 +110,15 @@ const AppBarComponent = ({
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',
-              filter: darkMode ? 'invert(0)' : 'invert(1)',
+              filter: darkMode ? 'invert(0)' : 'invert(0)',
+              //marginRight: '10px',
             }}
           >
             <img
-              src="/images/mauwintextlogo.svg"
+              src="/images/muawin_logo_white.svg"
               alt="Logo"
-              style={{ width: 100, height: 'auto', cursor: 'pointer' }}
+              style={{ width: 135, height: 'auto', cursor: 'pointer' }}
+              
             />
           </Link>
         </Typography>

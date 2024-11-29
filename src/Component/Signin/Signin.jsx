@@ -212,12 +212,12 @@ function SignInPage({ onLogin }) {
           </RightContainer>
           <LeftContainer>
             <img
-              src={`${process.env.PUBLIC_URL}/images/logo.webp`}
+              src={`${process.env.PUBLIC_URL}/images/muawin_logo_orange.png`}
               alt="Logo"
-              style={{ width: "80px", marginBottom: "5px" }}
+              style={{ width: "400px", marginBottom: "5px" }}
             />
-            <Typography variant="h5" component="h1" gutterBottom>
-              Sign-in to Muawin
+            <Typography variant="h6" component="h1" gutterBottom>
+              Sign-in
             </Typography>
             <Rectangle />
             {error && (

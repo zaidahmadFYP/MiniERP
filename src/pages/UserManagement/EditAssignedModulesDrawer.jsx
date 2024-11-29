@@ -27,11 +27,11 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
       { main: 'Licenses', subModules: ['Trade Licenses', 'Staff Medicals', 'Tourism Licenses', 'Labour Licenses'] },
       { main: 'Approvals', subModules: ['Outer Spaces'] },
       { main: 'Vehicles', subModules: ['Maintenance', 'Token Taxes', 'Route Permits'] },
-      { main: 'User Requests', subModules: [] },
       { main: 'Health Safety Environment', subModules: ['Monthly Inspection', 'Quarterly Audit', 'Expiry of Cylinders', 'Incidents', 'Training Status'] },
       { main: 'Taxation', subModules: ['Marketing / Bill Boards Taxes', 'Profession Tax'] },
       { main: 'Certificates', subModules: ['Electric Fitness Test'] },
       { main: 'Security', subModules: ['Guard Training'] },
+      { main: 'User Requests', subModules: [] },
       { main: 'Admin Policies and SOPs', subModules: [] },
       { main: 'Rental Agreements', subModules: [] },
       { main: 'User Management', subModules: [] },
@@ -78,8 +78,7 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
   };
 
   const renderModuleSelection = () => {
-    const modulesWithSubModules = modules.filter((module) => module.subModules.length > 0);
-    const modulesWithoutSubModules = modules.filter((module) => module.subModules.length === 0);
+    const moduleHeight = 56; // Fixed height for consistent styling
 
     return (
       <Box
@@ -96,47 +95,90 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
           },
         }}
       >
-        {modulesWithSubModules.map((module) => (
-          <Accordion key={module.main}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{module.main}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <FormGroup>
-                {module.subModules.map((subModule) => (
-                  <FormControlLabel
-                    key={subModule}
-                    control={
-                      <Checkbox
-                        checked={!!checkedModules[`${module.main}_${subModule}`]}
-                        onChange={handleModuleChange(module.main, subModule)}
-                      />
-                    }
-                    label={subModule}
+        {modules.map((module) =>
+          module.subModules.length > 0 ? (
+            // Expandable modules
+            <Accordion
+              key={module.main}
+              sx={{
+                marginBottom: '4px', // Reduced gap between accordions
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  minHeight: moduleHeight,
+                  '&.MuiAccordionSummary-root': {
+                    alignItems: 'center',
+                  },
+                  '& .MuiAccordionSummary-content': {
+                    margin: 0,
+                  },
+                }}
+              >
+                <Typography>{module.main}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <FormGroup>
+                  {module.subModules.map((subModule) => (
+                    <FormControlLabel
+                      key={subModule}
+                      control={
+                        <Checkbox
+                          checked={!!checkedModules[`${module.main}_${subModule}`]}
+                          onChange={handleModuleChange(module.main, subModule)}
+                          sx={{
+                            color: '#f15a22',
+                            '&.Mui-checked': {
+                              color: '#f15a22', // Checkbox color when checked
+                            },
+                          }}
+                        />
+                      }
+                      label={<Typography sx={{ color: '#fff' }}>{subModule}</Typography>}
+                    />
+                  ))}
+                </FormGroup>
+              </AccordionDetails>
+            </Accordion>
+          ) : (
+            // Non-expandable modules
+            <Box
+              key={module.main}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 16px',
+                borderRadius: '4px',
+                backgroundColor: '#1c1c1c',
+                height: moduleHeight,
+                marginBottom: '4px', // Reduced gap for non-expandable modules
+                boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!!checkedModules[`${module.main}_`]}
+                    onChange={handleModuleChange(module.main, '')}
+                    sx={{
+                      color: '#f15a22',
+                      '&.Mui-checked': {
+                        color: '#f15a22', // Checkbox color when checked
+                      },
+                    }}
                   />
-                ))}
-              </FormGroup>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-
-        <Divider sx={{ my: 3 }} />
-
-        {modulesWithoutSubModules.map((module) => (
-          <FormControlLabel
-            key={module.main}
-            control={
-              <Checkbox
-                checked={!!checkedModules[`${module.main}_`]}
-                onChange={handleModuleChange(module.main, '')}
+                }
+                label={<Typography sx={{ color: '#fff' }}>{module.main}</Typography>}
               />
-            }
-            label={module.main}
-          />
-        ))}
+            </Box>
+          )
+        )}
       </Box>
     );
   };
+
 
   return (
     <>
@@ -144,7 +186,7 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
         anchor="right"
         open={open}
         onClose={onClose}
-        PaperProps={{ sx: { width: '40%', marginTop: '64px'  } }}
+        PaperProps={{ sx: { width: '40%', marginTop: '64px' } }}
       >
         <Box sx={{ padding: 4 }}>
           <Typography variant="h5" gutterBottom>
@@ -153,7 +195,12 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
           <Divider sx={{ mb: 3 }} />
           {renderModuleSelection()}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-            <Button onClick={onClose} sx={{ mr: 2 }}>
+            <Button onClick={onClose} sx={{
+              mr: 2, color: 'red', borderColor: 'red', '&:hover': {
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                borderColor: 'red',
+              },
+            }}>
               Cancel
             </Button>
             <Button variant="contained" onClick={handleSave} sx={{ backgroundColor: '#f15a22' }}>
