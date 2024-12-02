@@ -232,15 +232,40 @@ function SignInPage({ onLogin }) {
                 {error}
               </Typography>
             )}
-            <StyledTextField
+            <TextField
               label="Email"
               variant="outlined"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={handleKeyDown}
+              InputLabelProps={{
+                shrink: true, // Keeps the label always visible and fixed
+              }}
+              sx={{
+                width: "100%", // Full width for the TextField
+                marginBottom: "20px", // Space between fields
+                "& .MuiInputLabel-root": {
+                  color: "#f15a22", // Default label color
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#f15a22", // Label color on focus
+                },
+                "& .MuiOutlinedInput-root": {
+                  height: "50px", // Slightly increased height
+                  "& fieldset": {
+                    borderColor: "#f15a22", // Default border color
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#f15a22", // Border color on hover
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#f15a22", // Border color on focus
+                  },
+                },
+              }}
             />
-            <StyledTextField
+            <TextField
               label="Password"
               variant="outlined"
               type={showPassword ? "text" : "password"}
@@ -256,6 +281,31 @@ function SignInPage({ onLogin }) {
                     </IconButton>
                   </InputAdornment>
                 ),
+              }}
+              InputLabelProps={{
+                shrink: true, // Keeps the label always visible and fixed
+              }}
+              sx={{
+                width: "100%", // Full width for the TextField
+                marginBottom: "20px", // Space between fields
+                "& .MuiInputLabel-root": {
+                  color: "#f15a22", // Default label color
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#f15a22", // Label color on focus
+                },
+                "& .MuiOutlinedInput-root": {
+                  height: "50px", // Slightly increased height
+                  "& fieldset": {
+                    borderColor: "#f15a22", // Default border color
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#f15a22", // Border color on hover
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#f15a22", // Border color on focus
+                  },
+                },
               }}
             />
             <CustomButton

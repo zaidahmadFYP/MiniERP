@@ -1098,3 +1098,76 @@ app.post('/api/assignedTasks', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+//--------------------------------------------------EXPIRY OF CYLINDERS---------------------------------------
+const locationSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+});
+
+const Location = mongoose.model('Location', locationSchema);
+
+// Category Schema
+const categorySchema = new mongoose.Schema({
+  category: { type: String, required: true },
+  weight: {
+    type: Number,  // Make sure weight is stored as a number
+    required: true
+  },
+  date: { type: Date, required: true }
+});
+
+const Category = mongoose.model('Category', categorySchema);
+
+// Cylinder Expiry Schema
+const CylinderExpirySchema = new mongoose.Schema({
+  location: { type: String, required: true },
+  categories: [{
+    category: { type: String, required: true },
+    weight: { type: Number, required: true },  // Weight should be a number
+    date: { type: Date, required: true }
+  }]
+});
+
+const CylinderExpiry = mongoose.model('CylinderExpiry', CylinderExpirySchema); 
+
+// API to get all locations
+app.get('/api/locations', async (req, res) => {
+  try {
+    const locations = await Location.find();
+    res.json(locations);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching locations', error: error.message });
+  }
+});
+
+// API to get all categories
+app.get('/api/categories', async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching categories', error: error.message });
+  }
+});
+
+// API to save cylinder expiry data
+app.post('/api/cylinder-expiry', async (req, res) => {
+  const { location, categories, zone, branch } = req.body;
+
+  // Ensure that the zone and branch are included in the data saved to the database
+  const cylinderExpiryData = new CylinderExpiry({
+    location,
+    categories,
+    zone,   // Save the zone
+    branch  // Save the branch
+  });
+
+  try {
+    await cylinderExpiryData.save();
+    res.status(201).json(cylinderExpiryData);
+  } catch (error) {
+    console.error('Error saving cylinder expiry data:', error);
+    res.status(500).json({ error: 'Failed to save data' });
+  }
+});
+

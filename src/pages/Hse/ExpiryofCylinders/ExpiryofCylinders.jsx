@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback  } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -21,8 +21,12 @@ import FormControl from '@mui/material/FormControl';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import HoverPopoverButton from './HoverPopoverButton';
+import AddCylinderExpiry from './AddCylinderExpiry';
+
 
 const ExpiryofCylinders = ({ open, user }) => {
+
+
   const theme = useTheme();
   const headingColor = theme.palette.mode === 'dark' ? '#f15a22' : '#000000';
   const [files, setFiles] = useState([]); // State for files
@@ -53,6 +57,8 @@ const ExpiryofCylinders = ({ open, user }) => {
   //   'application/txt'
   // ];
 
+
+
   // Fetch zones from the server
   const fetchZones = async () => {
     try {
@@ -78,14 +84,14 @@ const ExpiryofCylinders = ({ open, user }) => {
   // Fetch the files for the specified zone and branch
   const fetchFiles = useCallback(async () => {
     if (!selectedZone || !selectedBranch) return;
-  
+
     setLoading(true);
     try {
       const encodedZone = encodeURIComponent(selectedZone.trim());
       const encodedBranch = encodeURIComponent(selectedBranch.trim());
-  
+
       const response = await fetch(`http://localhost:5000/api/files/hse-expiryofcylinders/${encodedZone}/${encodedBranch}`);
-  
+
       if (response.ok) {
         const filesData = await response.json();
         setFiles(filesData);
@@ -115,7 +121,7 @@ const ExpiryofCylinders = ({ open, user }) => {
     if (selectedZone && selectedBranch) {
       fetchFiles(); // Fetch files when component mounts or when zone/branch changes
     }
-  }, [selectedZone, selectedBranch,fetchFiles]);
+  }, [selectedZone, selectedBranch, fetchFiles]);
 
   // Handle file upload
   const handleFileSelect = async (file) => {
@@ -137,7 +143,7 @@ const ExpiryofCylinders = ({ open, user }) => {
           setSnackbarMessage(`File "${normalizedFileName}" has been added successfully.`);
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
-        setSnackbarOpen(true); // Ensure snackbar triggers after deletion
+          setSnackbarOpen(true); // Ensure snackbar triggers after deletion
         } else {
           const errorMessage = await response.text();
           console.error('Error uploading file:', response.statusText, errorMessage);
@@ -163,33 +169,33 @@ const ExpiryofCylinders = ({ open, user }) => {
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
     setConfirmDeleteOpen(false); // Close the confirmation dialog immediately
-  
+
     const trimmedFilename = fileToDelete.trim();
     const encodedFilename = encodeURIComponent(trimmedFilename);
     const deleteUrl = `http://localhost:5000/api/files/hse-expiryofcylinders/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
-  
+
     // Show snackbar right away with success message
     setSnackbarMessage(`File "${trimmedFilename}" is being deleted, Please Click Refresh Icon`);
     setSnackbarSeverity('info');
     setSnackbarOpen(true);
-  
+
     try {
       console.log('DELETE URL:', deleteUrl);  // Debugging log
-  
+
       const response = await fetch(deleteUrl, { method: 'DELETE' });
-  
+
       if (response.ok) {
         setFiles((prevFiles) =>
           prevFiles.filter((file) => file.filename !== trimmedFilename)
         );
-  
+
         // Update snackbar to success after delete
         setSnackbarMessage(`File "${trimmedFilename}" has been deleted successfully.`);
         setSnackbarSeverity('success');
       } else {
         const errorMessage = await response.text();
         console.error('Failed to delete file:', response.statusText, errorMessage);
-  
+
         // Update snackbar to error in case of failure
         setSnackbarMessage('Failed to delete file.');
         setSnackbarSeverity('error');
@@ -199,7 +205,7 @@ const ExpiryofCylinders = ({ open, user }) => {
       setSnackbarMessage('Error occurred while deleting the file.');
       setSnackbarSeverity('error');
     }
-  
+
     setSnackbarOpen(true); // Ensure snackbar opens in all cases
     setFileToDelete(null); // Clear the file to delete after the operation
   };
@@ -221,11 +227,17 @@ const ExpiryofCylinders = ({ open, user }) => {
     if (reason === 'clickaway') return;
     setSnackbarOpen(false);
   };
+
+
+
   // Filter files based on search query (filename or fileNumber)
   const filteredFiles = files.filter(file =>
     file?.filename?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     file?.fileNumber?.toLowerCase().includes(searchQuery.toLowerCase())  // Added fileNumber to search filter
   );
+
+
+
 
   return (
     <MainContentWrapper open={open}>
@@ -244,6 +256,8 @@ const ExpiryofCylinders = ({ open, user }) => {
       >
         HSE/EXPIRY OF CYLINDERS
       </Typography>
+
+
       <Typography
         variant="subtitle1"
         sx={{
@@ -255,6 +269,24 @@ const ExpiryofCylinders = ({ open, user }) => {
         Your Branch: {user?.branch}
       </Typography>
 
+      {user?.role === 'Restaurant Manager' && (
+        <Box
+          marginBottom={2} // Add margin between the form and the table
+          display="flex"
+          justifyContent="flex-end" // Align the AddCylinderExpiry to the right (optional, based on your layout)
+        >
+          <AddCylinderExpiry
+          user={user}
+            zone={selectedZone}
+            branch={selectedBranch}
+            fetchFiles={fetchFiles} // Pass the fetchFiles function to refresh the file list after adding a cylinder expiry
+            sx={{
+              borderRadius: '20px', // Optional: More rounded corners for the AddCylinderExpiry component if needed
+              backgroundColor: '#f15a22', // Optional: Background color
+            }}
+          />
+        </Box>
+      )}
       {/* Box to contain the search bar, Refresh button, Zone and Branch Select, and Add File button */}
       <Box
         sx={{
@@ -338,7 +370,7 @@ const ExpiryofCylinders = ({ open, user }) => {
 
                 {/* Hover Button with Popover */}
                 <HoverPopoverButton />
-                
+
               </Grid>
             </>
           )}
