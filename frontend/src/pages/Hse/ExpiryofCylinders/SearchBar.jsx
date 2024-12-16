@@ -8,7 +8,7 @@ const SearchBar = ({ searchQuery, setSearchQuery, style }) => {
 
   return (
     <TextField 
-      label="Search files..." 
+      label="Search Location..." 
       variant="outlined" 
       fullWidth 
       value={searchQuery} 

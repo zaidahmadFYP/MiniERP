@@ -45,8 +45,8 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
     const fetchLocationsAndCategories = async () => {
       try {
         const [locationsRes, categoriesRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/locations'),
-          axios.get('http://localhost:5000/api/categories')
+          axios.get(`${process.env.REACT_APP_API_BASE_URL}/locations`),
+          axios.get(`${process.env.REACT_APP_API_BASE_URL}/categories`)
         ]);
         setAvailableLocations(locationsRes.data);
         setAvailableCategories(categoriesRes.data);
@@ -80,7 +80,7 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
         ? { 
             ...item, 
             location: event.target.value, 
-            categories: [{ category: '', weight: '', date: '' }] // Reset categories for new location
+            categories: [{ category: '', weight: '', date: '' }]
           }
         : item
     ));
@@ -88,18 +88,15 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
 
   const handleCategoryChange = (locationIndex, categoryIndex, event) => {
     const selectedCategory = availableCategories.find(cat => cat.name === event.target.value);
-  
-    // Automatically select weight based on the category
     const weight = selectedCategory?.weight ? selectedCategory.weight : '';
-  
-    // Update state to reflect selected category and weight
+
     setCylinderExpiryData(prev => prev.map((item, index) =>
       index === locationIndex
         ? {
             ...item,
             categories: item.categories.map((cat, i) =>
               i === categoryIndex
-                ? { ...cat, category: event.target.value, weight: weight }  // Set selected weight
+                ? { ...cat, category: event.target.value, weight: weight }
                 : cat
             )
           }
@@ -136,10 +133,10 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
     try {
       const responses = await Promise.all(
         cylinderExpiryData.map(data => 
-          axios.post('http://localhost:5000/api/cylinder-expiry', {
+          axios.post(`${process.env.REACT_APP_API_BASE_URL}/cylinder-expiry`, {
             ...data,
-            zone: user?.zone,  // Automatically include user zone
-            branch: user?.branch  // Automatically include user branch
+            zone: user?.zone, 
+            branch: user?.branch
           })
         )
       );
@@ -162,18 +159,18 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
     try {
       const responses = await Promise.all(
         cylinderExpiryData.map(data => 
-          axios.post('http://localhost:5000/api/cylinder-expiry', {
+          axios.post(`${process.env.REACT_APP_API_BASE_URL}/cylinder-expiry`, {
             ...data,
-            zone: user?.zone,  // Automatically include user zone
-            branch: user?.branch,  // Automatically include user branch
+            zone: user?.zone,
+            branch: user?.branch,
             categories: data.categories.map(cat => ({
               ...cat,
-              weight: parseFloat(cat.weight.replace(/[^\d.-]/g, ''))  // Remove " kg" and keep only the numeric value
+              weight: parseFloat(cat.weight.replace(/[^\d.-]/g, ''))
             }))
           })
         )
       );
-      // Handle the response or success here
+      // Handle the response if needed
     } catch (error) {
       console.error('Error submitting data:', error);
     }
@@ -186,19 +183,23 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
     setSnackbarOpen(false);
   };
 
+  const buttonStyle = {
+    borderRadius: '15px',
+    backgroundColor: '#f15a22',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#d14e1d',
+    },
+  };
+
   return (
     <>
       <Button
         variant="contained"
         onClick={handleOpen}
         sx={{
-          borderRadius: '15px',
-          backgroundColor: '#f15a22',
-          color: '#fff',
-          mb: 2,
-          '&:hover': {
-            backgroundColor: '#d14e1d',
-          },
+          ...buttonStyle,
+          mb: 2
         }}
       >
         Add Cylinder Expiry
@@ -260,87 +261,107 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
                   </Select>
                 </FormControl>
 
-                {locationData.categories.map((cat, categoryIndex) => (
-                  <Box
-                    key={categoryIndex}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      mb: 2,
-                      '& .MuiFormControl-root': {
-                        minWidth: 'auto'
-                      }
-                    }}
-                  >
-                    <FormControl sx={{ width: '35%' }}>
-                      <InputLabel>Category</InputLabel>
-                      <Select
-                        value={cat.category}
-                        onChange={(e) => handleCategoryChange(locationIndex, categoryIndex, e)}
-                        label="Category"
-                        sx={{ borderRadius: '8px' }}
-                      >
-                        {availableCategories.map((category) => (
-                          <MenuItem key={category._id} value={category.name}>
-                            {category.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                    <TextField
-                      label="Weight"
-                      value={cat.weight}
-                      disabled
-                      sx={{ width: '20%' }}
-                    />
-
-                    <TextField
-                      label="Date"
-                      type="date"
-                      value={cat.date}
-                      onChange={(e) => handleDateChange(locationIndex, categoryIndex, e)}
-                      sx={{ width: '20%' }}
-                    />
-
-                    <Button
-                      onClick={() => handleRemoveCategory(locationIndex, categoryIndex)}
-                      sx={{ color: '#f15a22' }}
+                {/* Center the categories */}
+                <Box sx={{
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  gap: 2, 
+                  mb: 2
+                }}>
+                  {locationData.categories.map((cat, categoryIndex) => (
+                    <Box
+                      key={categoryIndex}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        '& .MuiFormControl-root': {
+                          minWidth: 'auto'
+                        }
+                      }}
                     >
-                      <RemoveCircleIcon />
-                    </Button>
-                  </Box>
-                ))}
+                      <FormControl sx={{ width: '250px' }}>
+                        <InputLabel>Category</InputLabel>
+                        <Select
+                          value={cat.category}
+                          onChange={(e) => handleCategoryChange(locationIndex, categoryIndex, e)}
+                          label="Category"
+                          sx={{ borderRadius: '8px' }}
+                        >
+                          {availableCategories.map((category) => (
+                            <MenuItem key={category._id} value={category.name}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
 
-                <Button
-                  onClick={() => handleAddCategory(locationIndex)}
-                  sx={{ color: '#f15a22' }}
-                >
-                  <AddCircleIcon /> Add Category
-                </Button>
+                      <TextField
+                        label="Weight"
+                        value={cat.weight}
+                        disabled
+                        sx={{ width: '150px' }}
+                      />
+
+                      <TextField
+                        label="Date"
+                        type="date"
+                        value={cat.date}
+                        onChange={(e) => handleDateChange(locationIndex, categoryIndex, e)}
+                        sx={{ width: '150px' }}
+                        InputLabelProps={{ shrink: true }}
+                      />
+
+                      <Button
+                        onClick={() => handleRemoveCategory(locationIndex, categoryIndex)}
+                        sx={{ color: '#f15a22' }}
+                      >
+                        <RemoveCircleIcon />
+                      </Button>
+                    </Box>
+                  ))}
+
+                  {/* Center the Add Category button */}
+                  <Button
+                    onClick={() => handleAddCategory(locationIndex)}
+                    startIcon={<AddCircleIcon />}
+                    sx={{ ...buttonStyle, backgroundColor: '#f15a22' }}
+                    variant="contained"
+                  >
+                    Add Category
+                  </Button>
+                </Box>
               </Box>
             ))}
 
+            {/* Full-width Add Location button */}
             <Button
               onClick={handleAddLocation}
-              sx={{ color: '#f15a22', mb: 3 }}
+              sx={{ 
+                ...buttonStyle, 
+                mb: 3, 
+                backgroundColor: '#f15a22',
+                width: '100%',
+              }}
+              variant="contained"
             >
               Add Location
             </Button>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            {/* Bottom buttons: Cancel on left, Submit on right */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+              <Button
+                onClick={handleClose}
+                sx={{ ...buttonStyle }}
+                variant="contained"
+              >
+                Cancel
+              </Button>
               <Button
                 variant="contained"
                 onClick={handleSubmit}
-                sx={{
-                  borderRadius: '15px',
-                  backgroundColor: '#f15a22',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#d14e1d',
-                  },
-                }}
+                sx={{ ...buttonStyle }}
               >
                 Submit
               </Button>
@@ -365,6 +386,5 @@ const AddCylinderExpiry = ({ onAdd, user }) => {
     </>
   );
 };
-
 
 export default AddCylinderExpiry;

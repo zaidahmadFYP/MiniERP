@@ -36,10 +36,10 @@ const HoverModalButton = () => {
   // Fetch zones and branches
   const fetchZones = async () => {
     try {
-      const response = await axios.get('/api/zones'); // API call to get all zones
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/zones`); // API call to get all zones
       const zonesData = await Promise.all(
         response.data.map(async (zone) => {
-          const branchesResponse = await axios.get(`/api/zones/${zone.zoneName}/branches`);
+          const branchesResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/zones/${zone.zoneName}/branches`);
           return {
             zoneName: zone.zoneName,
             branches: branchesResponse.data,

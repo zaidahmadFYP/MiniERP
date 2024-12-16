@@ -9,7 +9,7 @@ const AnnouncementForm = ({ onClose, user }) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ announcement, createdBy: user.name }),
-    })
+    }) 
       .then((response) => response.json())
       .then((data) => onClose())
       .catch((error) => console.error('Error saving announcement:', error));

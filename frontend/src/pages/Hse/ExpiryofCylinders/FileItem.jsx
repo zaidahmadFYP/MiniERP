@@ -26,7 +26,7 @@ const FileItem = ({ file, onDelete }) => {
       <Grid item xs={3} sx={{ textAlign: 'right' }}>
         <IconButton
           aria-label="view"
-          href={`http://localhost:5000/api/files/download/${encodeURIComponent(file.filename)}`}
+          href={`${process.env.REACT_APP_API_BASE_URL}/files/download/${encodeURIComponent(file.filename)}`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: '#f15a22' }}

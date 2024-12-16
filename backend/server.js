@@ -35,6 +35,7 @@ db.once('open', async () => {
   await initializeZones();
 });
 
+
 //---------------------------------ZONE AND BRANCHES--------------------------------------
 // Define Zone schema
 const zoneSchema = new mongoose.Schema({
@@ -126,7 +127,7 @@ app.post('/api/zones/:zoneName/addBranch', async (req, res) => {
 });
 
 
-// API to update a branch name in a specific zone
+// API to update a branch name in a specific zone   
 app.put('/api/zones/:zoneId/editBranch', async (req, res) => {
   try {
     const { zoneId } = req.params;
@@ -1103,32 +1104,29 @@ app.post('/api/assignedTasks', async (req, res) => {
 const locationSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
 });
-
 const Location = mongoose.model('Location', locationSchema);
 
 // Category Schema
+// Matches your data: each category has a name and a weight field (like "6 kg", "5-10 Litre")
 const categorySchema = new mongoose.Schema({
-  category: { type: String, required: true },
-  weight: {
-    type: Number,  // Make sure weight is stored as a number
-    required: true
-  },
-  date: { type: Date, required: true }
+  name: { type: String, required: true },
+  weight: { type: String, required: true }
 });
-
 const Category = mongoose.model('Category', categorySchema);
 
 // Cylinder Expiry Schema
+// Includes zone and branch, as well as category details and date.
 const CylinderExpirySchema = new mongoose.Schema({
   location: { type: String, required: true },
   categories: [{
     category: { type: String, required: true },
-    weight: { type: Number, required: true },  // Weight should be a number
+    weight: { type: String, required: true },
     date: { type: Date, required: true }
-  }]
+  }],
+  zone: { type: String, required: true },
+  branch: { type: String, required: true }
 });
-
-const CylinderExpiry = mongoose.model('CylinderExpiry', CylinderExpirySchema); 
+const CylinderExpiry = mongoose.model('CylinderExpiry', CylinderExpirySchema);
 
 // API to get all locations
 app.get('/api/locations', async (req, res) => {
@@ -1150,16 +1148,20 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// API to save cylinder expiry data
+// API to save cylinder expiry data, including zone and branch
 app.post('/api/cylinder-expiry', async (req, res) => {
   const { location, categories, zone, branch } = req.body;
 
-  // Ensure that the zone and branch are included in the data saved to the database
+  // Validate presence of zone and branch
+  if (!zone || !branch) {
+    return res.status(400).json({ error: 'Zone and branch are required fields.' });
+  }
+
   const cylinderExpiryData = new CylinderExpiry({
     location,
     categories,
-    zone,   // Save the zone
-    branch  // Save the branch
+    zone,
+    branch
   });
 
   try {
@@ -1168,5 +1170,137 @@ app.post('/api/cylinder-expiry', async (req, res) => {
   } catch (error) {
     console.error('Error saving cylinder expiry data:', error);
     res.status(500).json({ error: 'Failed to save data' });
+  }
+});
+
+app.get('/api/cylinder-expiry/:zone/:branch', async (req, res) => {
+  const { zone, branch } = req.params;
+  try {
+    // Find all cylinder expiry records that match the given zone and branch
+    const cylinders = await CylinderExpiry.find({ zone, branch });
+
+    if (cylinders.length === 0) {
+      // If no records found, return 404
+      return res.status(404).json({ message: 'No cylinders found for this zone and branch.' });
+    }
+
+    // Return the found cylinders as JSON
+    res.json(cylinders);
+  } catch (error) {
+    console.error('Error fetching cylinders:', error);
+    res.status(500).json({ error: 'Server error fetching cylinders.' });
+  }
+});
+
+// DELETE route to remove a cylinder record by ID
+app.delete('/api/cylinder-expiry/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log("Attempting to delete ID:", id); // Debugging
+
+  try {
+    const deletedRecord = await CylinderExpiry.findByIdAndDelete(id);
+    console.log("Deleted record:", deletedRecord); // Debugging
+    if (!deletedRecord) {
+      return res.status(404).json({ message: 'No cylinder record found with that ID.' });
+    }
+    res.status(200).json({ message: 'Cylinder record deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting cylinder record:', error);
+    res.status(500).json({ error: 'Failed to delete cylinder record.' });
+  }
+});
+
+
+// POST /api/locations
+app.post('/api/locations', async (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: 'Location name is required.' });
+  }
+
+  try {
+    const newLocation = new Location({ name });
+    await newLocation.save();
+    res.status(201).json(newLocation);
+  } catch (error) {
+    console.error('Error adding location:', error);
+    res.status(500).json({ error: 'Failed to add location.' });
+  }
+});
+
+// POST /api/categories
+app.post('/api/categories', async (req, res) => {
+  const { name, weight } = req.body;
+  if (!name || !weight) {
+    return res.status(400).json({ error: 'Category name and weight are required.' });
+  }
+
+  try {
+    const newCategory = new Category({ name, weight });
+    await newCategory.save();
+    res.status(201).json(newCategory);
+  } catch (error) {
+    console.error('Error adding category:', error);
+    res.status(500).json({ error: 'Failed to add category.' });
+  }
+});
+
+// PUT /api/locations/:id
+// Body: { name: "New Location Name" }
+app.put('/api/locations/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ error: 'Location name is required.' });
+
+  try {
+    const updated = await Location.findByIdAndUpdate(id, { name }, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Location not found.' });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating location:', error);
+    res.status(500).json({ error: 'Failed to update location.' });
+  }
+});
+
+// PUT /api/categories/:id
+// Body: { name: "New Category Name", weight: "New Weight" }
+app.put('/api/categories/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, weight } = req.body;
+  if (!name || !weight) return res.status(400).json({ error: 'Name and weight are required.' });
+
+  try {
+    const updated = await Category.findByIdAndUpdate(id, { name, weight }, { new: true });
+    if (!updated) return res.status(404).json({ error: 'Category not found.' });
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ error: 'Failed to update category.' });
+  }
+});
+
+// DELETE /api/locations/:id
+app.delete('/api/locations/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await Location.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ error: 'Location not found.' });
+    res.json({ message: 'Location deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting location:', error);
+    res.status(500).json({ error: 'Failed to delete location.' });
+  }
+});
+
+// DELETE /api/categories/:id
+app.delete('/api/categories/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await Category.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ error: 'Category not found.' });
+    res.json({ message: 'Category deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    res.status(500).json({ error: 'Failed to delete category.' });
   }
 });
