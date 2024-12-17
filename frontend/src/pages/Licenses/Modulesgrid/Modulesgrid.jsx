@@ -22,7 +22,7 @@ const ModulesGrid = ({ user }) => {
         image: '/images/folder.webp',
         subheadings: [
           { title: 'Islamabad Food Authority', path: '/Licenses/IslamabadFoodAuthority' },
-          { title: 'Capital Food Authority', path: '/Licenses/CapitalFoodAuthority' },
+          { title: 'Capital Development Authority', path: '/Licenses/CapitalFoodAuthority' },
           { title: 'Cantonment', path: '/Licenses/Cantonment' },
           { title: 'Punjab Food Authority', path: '/Licenses/PunjabFoodAuthority' },
           { title: 'Medical', path: '/Licenses/Medical' },

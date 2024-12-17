@@ -38,9 +38,15 @@ const AddFileButton = ({ onFileSelect }) => {
         style={{ display: 'none' }} // Hidden file input
         onChange={handleFileChange} // When a file is selected, trigger the onChange handler
       />
-      <CustomButton 
-        variant="contained" 
+
+      <CustomButton
+        variant="contained"
         onClick={handleAddFileClick} // Open file picker on button click
+        sx={{
+          width: { xs: '100%', sm: 'auto' }, // Full width on mobile, auto width on larger screens
+          padding: { xs: '10px 0', sm: '10px 20px' }, // Adjust padding for small screens
+          fontSize: { xs: '14px', sm: '16px' }, // Adjust font size for small screens
+        }}
       >
         Add File
       </CustomButton>
