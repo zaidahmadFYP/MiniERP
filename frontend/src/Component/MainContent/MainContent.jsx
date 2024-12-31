@@ -1,19 +1,25 @@
+// src/Component/MainContent/MainContent.jsx
+
 import React, { useEffect, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { useTheme } from '@mui/material/styles';
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Banner from '../BannerComponent/BannerComponent';
 import TilesGrid from '../TileGrid/TileGrid';
-import TabsComponent from '../TabComponent/TabComponent';
+import TabsComponent from '../TabComponent/TabComponent'; // Ensure correct path
 import AnnouncementForm from './AnnouncementForm';
 import TaskForm from './TaskForm';
 
 const MainContent = ({ user }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile devices
   const headingColor = theme.palette.mode === 'dark' ? '#f15a22' : '#000000';
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -33,7 +39,9 @@ const MainContent = ({ user }) => {
       { name: 'Rental Agreements', image: '/images/rental_agreements.webp' },
       { name: 'User Management', image: '/images/user_management.webp' },
     ];
-    return allTiles.filter((tile) => user.registeredModules.some((module) => module.startsWith(tile.name)));
+    return allTiles.filter((tile) =>
+      user.registeredModules.some((module) => module.startsWith(tile.name))
+    );
   }, [user]);
 
   useEffect(() => {
@@ -44,7 +52,7 @@ const MainContent = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    console.log("User data in MainContent:", user);
+    console.log('User data in MainContent:', user);
   }, [user]);
 
   const handleTileClick = (tileName) => {
@@ -69,8 +77,8 @@ const MainContent = ({ user }) => {
       component="main"
       sx={{
         flexGrow: 1,
-        p: 4,
-        marginLeft: 1,
+        p: isMobile ? 2 : 4, // Reduced padding on mobile
+        marginLeft: isMobile ? 0 : 1,
         transition: 'margin-left 0.1s',
         overflowY: 'auto',
         height: '100vh',
@@ -96,37 +104,39 @@ const MainContent = ({ user }) => {
           color: headingColor,
           mb: 1,
           textAlign: 'left',
-          ml: 6,
-          fontSize: '30px',
+          ml: isMobile ? 2 : 6,
+          fontSize: isMobile ? '24px' : '30px',
           fontFamily: 'TanseekModernW20',
         }}
       >
         MODULES
       </Typography>
 
-      <Grid container spacing={0} alignItems="flex-start">
-        <Grid item xs={8}>
-          <Box sx={{ ml: 6 }}>
+      <Grid container spacing={isMobile ? 2 : 0} alignItems="flex-start">
+        <Grid item xs={12} md={8}>
+          <Box sx={{ ml: isMobile ? 0 : 6 }}>
             <TilesGrid tiles={tiles} onTileClick={handleTileClick} />
           </Box>
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={12} md={4}>
           {user.role === 'Admin' && (
             <Box
               sx={{
                 display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'space-between',
                 mb: 2,
-                ml: 10,
+                ml: isMobile ? 0 : 10,
                 maxWidth: '100%',
+                gap: isMobile ? 1 : 0, // Add gap between buttons on mobile
               }}
             >
               <Button
                 variant="contained"
                 className="expanding-button"
                 sx={{
-                  width: '48%',
+                  width: isMobile ? '100%' : '48%',
                   backgroundColor: '#f15a22',
                   height: '47px',
                   borderRadius: '12px',
@@ -143,7 +153,7 @@ const MainContent = ({ user }) => {
               <Button
                 variant="contained"
                 sx={{
-                  width: '48%',
+                  width: isMobile ? '100%' : '48%',
                   backgroundColor: '#f15a22',
                   borderRadius: '12px',
                   height: '47px',
@@ -162,9 +172,9 @@ const MainContent = ({ user }) => {
 
           <Box
             sx={{
-              ml: 10,
+              ml: isMobile ? 0 : 10,
               overflowY: 'auto',
-              maxHeight: 'calc(100vh - 200px)',
+              maxHeight: isMobile ? '60vh' : 'calc(100vh - 200px)',
               '&::-webkit-scrollbar': {
                 width: '6px',
               },
@@ -191,14 +201,17 @@ const MainContent = ({ user }) => {
         </Grid>
       </Grid>
 
-      {showAnnouncementForm && <AnnouncementForm onClose={() => setShowAnnouncementForm(false)} user={user} />}
+      {/* Modals */}
+      {showAnnouncementForm && (
+        <AnnouncementForm onClose={() => setShowAnnouncementForm(false)} user={user} />
+      )}
 
       {showTaskForm && (
-        <TaskForm 
-          onClose={() => setShowTaskForm(false)} 
-          userId={user?._id} 
-          userZone={user?.zone} 
-          userBranch={user?.branch} 
+        <TaskForm
+          onClose={() => setShowTaskForm(false)}
+          userId={user?._id}
+          userZone={user?.zone}
+          userBranch={user?.branch}
         />
       )}
     </Box>

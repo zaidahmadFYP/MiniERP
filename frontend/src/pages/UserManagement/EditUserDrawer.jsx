@@ -125,7 +125,7 @@ const EditUserDrawer = ({ open, onClose, user, onUserUpdated }) => {
   
     try {
       // Use userId directly in the URL path
-      const response = await axios.put(`http://localhost:5000/api/users/${user._id}`, updatePayload);
+      const response = await axios.put(`${process.env.REACT_APP_API_BASE_URL}/users/${user._id}`, updatePayload);
       console.log('Response from server:', response.data); // Log response
       setNotificationOpen(true); // Show success notification
       setDrawerCloseNotificationOpen(true); // Show snackbar when drawer closes

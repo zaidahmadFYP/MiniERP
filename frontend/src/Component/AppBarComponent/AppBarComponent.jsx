@@ -1,56 +1,78 @@
 import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Tooltip from '@mui/material/Tooltip';
+import {
+  Toolbar,
+  Typography,
+  IconButton,
+  Badge,
+  Tooltip,
+  Box,
+  useMediaQuery,
+} from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import SearchBar from '../SearchBar/SearchBar';
-import ProfileMenu from './ProfileMenu'; // Import the ProfileMenu component
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import { Link } from 'react-router-dom';
+
+import SearchBar from '../SearchBar/SearchBar';
+import ProfileMenu from './ProfileMenu'; // If you have a separate file for that
 import './AppBarComponent.css';
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor: '#f15a22',
   boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.5)',
 }));
 
-const AppBarComponent = ({
-  open,
-  handleDrawerToggle,
+function AppBarComponent({
+  // Dark mode
   darkMode,
   handleDarkModeToggle,
+
+  // Search
   searchQuery,
   onSearch,
   searchResults,
-  user = { name: 'John Doe', email: 'johndoe@example.com', role: 'Admin', branch: 'New York' },
-}) => {
+
+  // User info
+  user,
+
+  // Drawer states
+  mobileOpen,
+  setMobileOpen,
+  desktopOpen,
+  setDesktopOpen,
+}) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Animations, etc.
   const [jumping, setJumping] = useState(false);
   const [rotating, setRotating] = useState(false);
-  const [drawerRotating, setDrawerRotating] = useState(false); 
   const [highlightedIcon, setHighlightedIcon] = useState(null);
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null); // For Profile Menu
 
+  // Profile menu anchor
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const isProfileMenuOpen = Boolean(profileAnchorEl);
 
-  const handleProfileMenuOpen = (event) => {
-    setHighlightedIcon('account');
-    setProfileAnchorEl(event.currentTarget);
+  // Mobile search bar
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  // Toggle the Drawer
+  const handleDrawerToggle = () => {
+    if (isMobile) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setDesktopOpen(!desktopOpen);
+    }
   };
 
-  const handleMenuClose = () => {
-    setProfileAnchorEl(null);
-    setHighlightedIcon(null);
-  };
-
+  // Dark mode icon animation
   const triggerAnimation = (setter, icon) => {
     setHighlightedIcon(icon);
     setter(true);
@@ -58,139 +80,199 @@ const AppBarComponent = ({
   };
 
   const handleDarkModeClick = () => {
-    setHighlightedIcon('darkMode');
     triggerAnimation(setRotating, 'darkMode');
-    handleDarkModeToggle();
+    if (handleDarkModeToggle) {
+      handleDarkModeToggle();
+    }
+  };
+
+  // Notifications
+  const handleNotificationsClick = () => {
+    triggerAnimation(setJumping, 'notifications');
+  };
+
+  // Profile menu open/close
+  const handleProfileMenuOpen = (event) => {
+    setProfileAnchorEl(event.currentTarget);
+    setHighlightedIcon('account');
+  };
+  const handleMenuClose = () => {
+    setProfileAnchorEl(null);
+    setHighlightedIcon(null);
+  };
+
+  // Mobile search
+  const toggleMobileSearch = () => {
+    setMobileSearchOpen(!mobileSearchOpen);
+    setHighlightedIcon('search');
   };
 
   return (
-    <AppBar position="fixed" open={open}>
-      <Toolbar>
-        <Tooltip title="Open Menu" placement="bottom" arrow enterDelay={900}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => {
-              handleDrawerToggle();
-              triggerAnimation(setDrawerRotating, 'drawer');
-            }}
-            edge="start"
-            className={`${drawerRotating ? 'scale-up' : ''} ${highlightedIcon === 'drawer' ? 'highlighted' : ''}`}
-            sx={{
-              marginRight: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              padding: '8px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              },
-            }}
+    <>
+      <AppBar position="fixed">
+        <Toolbar>
+          {/* Menu Icon (hamburger or close) */}
+          <Tooltip
+            title={mobileOpen ? 'Close Menu' : 'Open Menu'}
+            placement="bottom"
+            arrow
+            enterDelay={900}
           >
-            <img
-              src="/images/dotsmenu.svg"
-              alt="Menu Icon"
-              style={{
-                width: 23,
-                height: 23,
-                filter: darkMode ? 'invert(0)' : 'invert(1)',
-                marginRight: '1px',
+            <IconButton
+              color="inherit"
+              onClick={handleDrawerToggle}
+              edge="start"
+              sx={{
+                marginRight: 1,
+                padding: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
               }}
-            />
-          </IconButton>
-        </Tooltip>
-        <Typography
-          variant="h6"
-          noWrap
-          component="div"
-          sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}
-        >
-          <Link
-            to="/"
-            style={{
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              filter: darkMode ? 'invert(0)' : 'invert(0)',
-              //marginRight: '10px',
-            }}
-          >
-            <img
-              src="/images/muawin_logo_white.svg"
-              alt="Logo"
-              style={{ width: 135, height: 'auto', cursor: 'pointer' }}
-              
-            />
-          </Link>
-        </Typography>
+            >
+              {/* If mobile AND drawer is open, show close icon */}
+              {isMobile && mobileOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          </Tooltip>
 
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearch={onSearch}
-          searchResults={searchResults}
-        />
-        <Tooltip title="Toggle Dark Mode" placement="bottom" arrow enterDelay={900}>
-          <IconButton
-            onClick={handleDarkModeClick}
-            color="inherit"
-            className={`${rotating ? 'fade-rotate' : ''} ${highlightedIcon === 'darkMode' ? 'highlighted' : ''}`}
-            sx={{
-              padding: '12px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              },
-            }}
+          {/* LOGO */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: isMobile ? 1 : 0, display: 'flex', alignItems: 'center' }}
           >
-            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Notifications" placement="bottom" arrow enterDelay={900}>
-          <IconButton
-            size="large"
-            aria-label="show 17 new notifications"
-            color="inherit"
-            onClick={() => triggerAnimation(setJumping, 'notifications')}
-            className={`${jumping ? 'jump' : ''} ${highlightedIcon === 'notifications' ? 'highlighted' : ''}`}
-            sx={{
-              padding: '12px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              },
-            }}
-          >
-            <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Account" placement="bottom" arrow enterDelay={900}>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            color="inherit"
-            onClick={handleProfileMenuOpen}
-            className={`${highlightedIcon === 'account' ? 'highlighted' : ''}`}
-            sx={{
-              padding: '12px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              },
-            }}
-          >
-            <AccountCircle />
-          </IconButton>
-        </Tooltip>
+            <Link
+              to="/"
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <img
+                src="/images/muawin_logo_white.svg"
+                alt="Logo"
+                style={{
+                  width: isMobile ? 100 : 135,
+                  height: 'auto',
+                  cursor: 'pointer',
+                }}
+              />
+            </Link>
+          </Typography>
 
-        {/* Use ProfileMenu component */}
-        <ProfileMenu
-          anchorEl={profileAnchorEl}
-          isOpen={isProfileMenuOpen}
-          onClose={handleMenuClose}
-          user={user}
-          darkMode={darkMode}
-        />
-      </Toolbar>
-    </AppBar>
+          {/* DESKTOP SEARCH BAR */}
+          {!isMobile && (
+            <Box sx={{ flexGrow: 1, mx: 2 }}>
+              <SearchBar
+                searchQuery={searchQuery}
+                onSearch={onSearch}
+                searchResults={searchResults}
+              />
+            </Box>
+          )}
+
+          {/* MOBILE SEARCH ICON */}
+          {isMobile && (
+            <Tooltip title="Search" placement="bottom" arrow enterDelay={900}>
+              <IconButton
+                onClick={toggleMobileSearch}
+                color="inherit"
+                sx={{
+                  padding: '12px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                }}
+              >
+                {mobileSearchOpen ? <CloseIcon /> : <SearchIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {/* DARK MODE ICON */}
+          <Tooltip title="Toggle Dark Mode" placement="bottom" arrow enterDelay={900}>
+            <IconButton
+              onClick={handleDarkModeClick}
+              color="inherit"
+              sx={{
+                padding: '12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+            >
+              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+          </Tooltip>
+
+          {/* NOTIFICATIONS */}
+          <Tooltip title="Notifications" placement="bottom" arrow enterDelay={900}>
+            <IconButton
+              size="large"
+              color="inherit"
+              onClick={handleNotificationsClick}
+              sx={{
+                padding: '12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
+          {/* ACCOUNT */}
+          <Tooltip title="Account" placement="bottom" arrow enterDelay={900}>
+            <IconButton
+              size="large"
+              color="inherit"
+              onClick={handleProfileMenuOpen}
+              sx={{
+                padding: '12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Tooltip>
+
+          {/* PROFILE MENU */}
+          <ProfileMenu
+            anchorEl={profileAnchorEl}
+            isOpen={isProfileMenuOpen}
+            onClose={handleMenuClose}
+            user={user}
+            darkMode={darkMode}
+          />
+        </Toolbar>
+
+        {/* MOBILE SEARCH BAR BELOW THE MAIN TOOLBAR */}
+        {isMobile && mobileSearchOpen && (
+          <Toolbar
+            sx={{
+              backgroundColor: '#f15a22',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+            }}
+          >
+            <SearchBar
+              searchQuery={searchQuery}
+              onSearch={onSearch}
+              searchResults={searchResults}
+              fullWidth
+            />
+          </Toolbar>
+        )}
+      </AppBar>
+    </>
   );
-};
+}
 
 export default AppBarComponent;

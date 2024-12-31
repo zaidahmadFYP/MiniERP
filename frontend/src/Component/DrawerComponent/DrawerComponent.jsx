@@ -1,96 +1,96 @@
-import React, { useState, useEffect, useRef } from 'react';
+// src/Component/DrawerComponent/DrawerComponent.jsx
+
+import React, { useState } from 'react';
+import {
+  Drawer as MuiDrawer,
+  SwipeableDrawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Divider,
+  Toolbar,
+  Tooltip,
+  useMediaQuery,
+} from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
-import MuiDrawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
+
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import Tooltip from '@mui/material/Tooltip';
-import DrawerHeader from '../DrawerHeader/DrawerHeader';
 
-const drawerWidth = 260;
+const drawerWidth = 300;
 
+// For the expanded (full-width) desktop drawer
 const openedMixin = (theme) => ({
-  width: 300, // Increased the width from the original 260 to 300
+  width: drawerWidth,
   transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: 'hidden',
-  boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.3)',
 });
 
+// For the collapsed (mini) desktop drawer
 const closedMixin = (theme) => ({
+  width: `calc(${theme.spacing(7.5)} + 1px)`,
   transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7.5)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(7.5)} + 1px)`,
-  },
 });
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-    overflowX: 'hidden',
-  })
-);
+// A styled Drawer for desktop (mini/full)
+const DrawerStyled = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
 
-const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
-  const [isOpen, setIsOpen] = useState(open);
-  const [openMenu, setOpenMenu] = useState({});
+/**
+ * Props:
+ * - user: object with `registeredModules` array for filtering
+ * - mobileOpen: bool controlling the mobile (temporary) drawer open/close
+ * - setMobileOpen: function to toggle mobileOpen
+ * - desktopOpen: bool controlling mini vs. full drawer on desktop
+ * - setDesktopOpen: function to toggle desktopOpen
+ */
+export default function DrawerComponent({
+  user,
+  mobileOpen,
+  setMobileOpen,
+  desktopOpen,
+  setDesktopOpen,
+}) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
-  const drawerRef = useRef(null); // Reference to the Drawer
 
-  const handleMenuClick = (itemText) => {
-    setOpenMenu((prev) => ({
-      ...prev,
-      [itemText]: !prev[itemText],
-    }));
-  };
+  // Track which submenus are expanded
+  const [openMenu, setOpenMenu] = useState({});
 
-  const handleIconClick = (path) => {
-    if (path) {
-      navigate(path);
-    }
-  };
-
-  useEffect(() => {
-    setIsOpen(open);
-  }, [open]);
-
-  // Helper function to check if user has access to a module or submodule
+  // Check if user has access to a module
   const hasAccess = (moduleName, submoduleName = '') => {
-    return user?.registeredModules.some((module) => {
+    return user?.registeredModules?.some((module) => {
       if (submoduleName) {
-        // Check both main module and submodule
         return module === `${moduleName}_${submoduleName}`;
       }
-      // Check only main module
       return module.startsWith(`${moduleName}_`) || module === moduleName;
     });
   };
 
-  // Items to be displayed in the Drawer
+  // Sample items array
   const items = [
     {
       text: 'Licenses',
@@ -166,116 +166,154 @@ const DrawerComponent = ({ open, handleDrawerToggle, theme, user }) => {
       icon: '/images/user_management.webp',
       path: '/UserManagement',
     },
-    { text: 'User Tickets', icon: '/images/user_icon.webp', path: '/UserRequests' },
+    {
+      text: 'User Tickets',
+      icon: '/images/user_icon.webp',
+      path: '/UserRequests',
+    },
   ];
 
-  const filteredItems = items.filter((item) => {
-    return hasAccess(item.text);
-  });
+  // Filter top-level items
+  const filteredItems = items.filter((item) => hasAccess(item.text));
 
-  // Close the drawer when clicking outside of it
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (drawerRef.current && !drawerRef.current.contains(event.target) && isOpen) {
-        handleDrawerToggle();
-      }
-    };
+  const handleMenuClick = (itemText) => {
+    setOpenMenu((prev) => ({
+      ...prev,
+      [itemText]: !prev[itemText],
+    }));
+  };
 
-    document.addEventListener('mousedown', handleClickOutside);
+  const handleNavigate = (path) => {
+    navigate(path);
+    // On mobile, close the drawer after navigating
+    if (isMobile) {
+      setMobileOpen(false);
+    }
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, handleDrawerToggle]);
+  // Drawer contents
+  const drawerContent = (
+    <>
+      <Toolbar />
+      <Divider />
+      <List>
+        {filteredItems.map((item) => {
+          const hasSubmenu = !!item.submenu;
 
-  return (
-    <div ref={drawerRef}>
-      <Drawer variant="permanent" open={isOpen}>
-        <DrawerHeader open={isOpen} handleDrawerToggle={handleDrawerToggle} theme={theme} />
-
-        <List
-          sx={{
-            overflowY: 'auto',
-            height: 'calc(100vh - 64px)',
-            overflowX: 'hidden',
-            '&::-webkit-scrollbar': {
-              width: '6px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#888',
-              borderRadius: '10px',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              backgroundColor: '#555',
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: '#f1f1f1',
-            },
-          }}
-        >
-          {filteredItems.map((item) => (
+          return (
             <div key={item.text}>
-              <ListItem disablePadding sx={{ display: 'block' }}>
-                <Tooltip title={item.text} placement="right" arrow enterDelay={1500}>
+              <ListItem disablePadding>
+                <Tooltip
+                  title={item.text}
+                  placement="right"
+                  arrow
+                  enterDelay={500}
+                >
                   <ListItemButton
-                    onClick={() => {
-                      if (item.submenu) {
-                        handleMenuClick(item.text);
-                      } else {
-                        handleIconClick(item.path);
-                      }
-                    }}
                     sx={{
                       minHeight: 48,
-                      justifyContent: isOpen ? 'initial' : 'center',
+                      justifyContent: desktopOpen ? 'initial' : 'center',
                       px: 2,
-                      overflowX: 'hidden',
+                    }}
+                    onClick={() => {
+                      if (isMobile) {
+                        // On mobile, always expand if there's a submenu
+                        if (hasSubmenu) {
+                          handleMenuClick(item.text);
+                        } else {
+                          handleNavigate(item.path);
+                        }
+                      } else {
+                        // On desktop
+                        if (!desktopOpen) {
+                          // If drawer is closed, just navigate
+                          handleNavigate(item.path);
+                        } else {
+                          // If drawer is open and item has a submenu, expand
+                          if (hasSubmenu) {
+                            handleMenuClick(item.text);
+                          } else {
+                            handleNavigate(item.path);
+                          }
+                        }
+                      }
                     }}
                   >
                     <ListItemIcon
-                      onClick={() => handleIconClick(item.path)}
                       sx={{
                         minWidth: 0,
-                        mr: isOpen ? 0.5 : 'auto',
+                        mr: 2, // spacing between icon and text
                         justifyContent: 'center',
-                        padding: '7px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        cursor: 'pointer',
                       }}
                     >
-                      <img src={item.icon} alt={item.text} style={{ width: 25, height: 25 }} />
+                      <img
+                        src={item.icon}
+                        alt={item.text}
+                        style={{ width: 25, height: 25 }}
+                      />
                     </ListItemIcon>
-                    <ListItemText primary={item.text} sx={{ opacity: isOpen ? 1 : 0 }} />
-                    {item.submenu && isOpen && (openMenu[item.text] ? <ExpandLess /> : <ExpandMore />)}
+
+                    {/* Show text if mobile OR if desktop drawer is open */}
+                    <ListItemText
+                      primary={item.text}
+                      sx={{
+                        opacity: isMobile || desktopOpen ? 1 : 0,
+                      }}
+                    />
+
+                    {/* Show arrow if it has a submenu and (desktop open or mobile) */}
+                    {hasSubmenu && (desktopOpen || isMobile) && (
+                      openMenu[item.text] ? <ExpandLess /> : <ExpandMore />
+                    )}
                   </ListItemButton>
                 </Tooltip>
               </ListItem>
-              {item.submenu && isOpen && (
+
+              {/* Submenu collapse if the user expanded it on mobile, or if desktop is open */}
+              {hasSubmenu && (desktopOpen || isMobile) && (
                 <Collapse in={openMenu[item.text]} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.submenu
-                      .filter((submenuItem) => hasAccess(item.text, submenuItem.text))
-                      .map((submenuItem) => (
+                      .filter((sub) => hasAccess(item.text, sub.text))
+                      .map((sub) => (
                         <ListItemButton
-                          key={submenuItem.text}
-                          sx={{ pl: isOpen ? 4 : 2 }}
-                          onClick={() => handleIconClick(submenuItem.path)}
-                          style={{ overflowX: 'hidden' }}
+                          key={sub.text}
+                          sx={{ pl: 4 }}
+                          onClick={() => handleNavigate(sub.path)}
                         >
-                          <ListItemText primary={submenuItem.text} />
+                          <ListItemText primary={sub.text} />
                         </ListItemButton>
                       ))}
                   </List>
                 </Collapse>
               )}
             </div>
-          ))}
-        </List>
-      </Drawer>
-    </div>
+          );
+        })}
+      </List>
+    </>
   );
-};
 
-export default DrawerComponent;
+  // Mobile => swipeable drawer
+  if (isMobile) {
+    return (
+      <SwipeableDrawer
+        anchor="left"
+        open={mobileOpen}
+        onOpen={() => setMobileOpen(true)}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        PaperProps={{ style: { width: drawerWidth } }}
+      >
+        {drawerContent}
+      </SwipeableDrawer>
+    );
+  }
+
+  // Desktop => permanent mini/full drawer
+  return (
+    <DrawerStyled variant="permanent" open={desktopOpen}>
+      {drawerContent}
+    </DrawerStyled>
+  );
+}

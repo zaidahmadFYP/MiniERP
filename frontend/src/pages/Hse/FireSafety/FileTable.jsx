@@ -12,7 +12,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
-const FileTable = ({ files, onDelete }) => {
+const FileTable = ({ files, onDelete, user  }) => {
   const theme = useTheme();
   const buttonColor = '#f15a22';
 
@@ -31,65 +31,151 @@ const FileTable = ({ files, onDelete }) => {
   const filePathColor = theme.palette.mode === 'dark' ? '#80b3ff' : 'blue'; // Lighter blue for dark mode, regular blue for light mode
 
   return (
-    <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'hidden' }}>
-      <Table sx={{ tableLayout: 'fixed', width: '100%' }} aria-label="file table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="center"><Typography variant="subtitle1" fontWeight="bold">File Path</Typography></TableCell>
-            <TableCell align="center"><Typography variant="subtitle1" fontWeight="bold">File Name</Typography></TableCell>
-            <TableCell align="center"><Typography variant="subtitle1" fontWeight="bold">File Type</Typography></TableCell>
-            <TableCell align="center"><Typography variant="subtitle1" fontWeight="bold">Uploaded Date</Typography></TableCell>
-            <TableCell align="center"><Typography variant="subtitle1" fontWeight="bold">Manage</Typography></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {files.map((file) => (
-            <TableRow key={file.fileId}>
-              {/* FILE PATH */}
-              <TableCell align="jusitfy">
-                <Typography
-                  variant="body2"
-                  sx={{ color: filePathColor, textDecoration: 'underline' }}
-                >{`HSE/INC/FT/${formatFilePath(getCleanFileName(file.filename))}/${file.fileNumber}`}</Typography>
+    <TableContainer
+    component={Paper}
+    sx={{
+      width: '100%',
+      overflowX: 'auto',
+      backgroundColor: theme.palette.mode === 'dark' ? '#2E2E2E' : '#FFFFFF',
+      color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#000000',
+      '@media (max-width: 600px)': { maxWidth: '100%' },
+    }}
+  >
+    <Table
+      sx={{
+        tableLayout: 'fixed',
+        width: '100%',
+        minWidth: '600px',
+        borderCollapse: 'collapse',
+        '& th, & td': {
+          borderBottom: `1px solid ${
+            theme.palette.mode === 'dark' ? '#555' : '#ddd'
+          }`,
+        },
+      }}
+      aria-label="file table"
+    >
+      <TableHead>
+        <TableRow>
+          {['File Path', 'File Name', 'File Type', 'Uploaded Date', 'Manage'].map(
+            (header) => (
+              <TableCell
+                key={header}
+                align="center"
+                sx={{
+                  fontSize: { xs: '12px', sm: '14px' },
+                  padding: { xs: '6px', sm: '12px' },
+                  fontWeight: 'bold',
+                  backgroundColor:
+                    theme.palette.mode === 'dark' ? '#424242' : '#F5F5F5',
+                  color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#000000',
+                }}
+              >
+                {header}
               </TableCell>
-
-              {/* FILE NAME */}
-              <TableCell align="center">
-                <Typography variant="body2">{getCleanFileName(file.filename)}</Typography>
-              </TableCell>
-
-              {/* FILE TYPE */}
-              <TableCell align="center">
-                <Typography variant="body2">{file.filetype}</Typography>
-              </TableCell>
-
-              {/* UPLOAD DATE */}
-              <TableCell align="center">
-                <Typography variant="body2">{new Date(file.lastModified).toLocaleString()}</Typography>
-              </TableCell>
-
-              {/* DELETE ICON */}
-              <TableCell align="center">
-                <IconButton onClick={() => onDelete(file.filename)} aria-label="delete" sx={{ color: buttonColor }}>
+            )
+          )}
+        </TableRow>
+      </TableHead>
+  
+      <TableBody>
+        {files.map((file, index) => (
+          <TableRow
+            key={file.fileId}
+            sx={{
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? index % 2 === 0
+                    ? '#333333'
+                    : '#2E2E2E'
+                  : index % 2 === 0
+                  ? '#F9F9F9'
+                  : '#FFFFFF',
+            }}
+          >
+            {/* File Path */}
+            <TableCell
+              align="center"
+              sx={{
+                padding: { xs: '6px', sm: '12px' },
+                color: theme.palette.text.primary,
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ textDecoration: 'underline', wordBreak: 'break-word' }}
+              >
+                {`HSE/TRS/FS/${formatFilePath(getCleanFileName(file.filename))}/${file.fileNumber}`}
+              </Typography>
+            </TableCell>
+  
+            {/* File Name */}
+            <TableCell
+              align="center"
+              sx={{
+                padding: { xs: '6px', sm: '12px' },
+                color: theme.palette.text.primary,
+              }}
+            >
+              {getCleanFileName(file.filename)}
+            </TableCell>
+  
+            {/* File Type */}
+            <TableCell
+              align="center"
+              sx={{
+                padding: { xs: '6px', sm: '12px' },
+                color: theme.palette.text.primary,
+              }}
+            >
+              {file.filetype}
+            </TableCell>
+  
+            {/* Uploaded Date */}
+            <TableCell
+              align="center"
+              sx={{
+                padding: { xs: '6px', sm: '12px' },
+                color: theme.palette.text.primary,
+              }}
+            >
+              {new Date(file.lastModified).toLocaleString()}
+            </TableCell>
+  
+            {/* Manage */}
+            <TableCell align="center" sx={{ padding: { xs: '6px', sm: '12px' } }}>
+              {user?.role === 'Admin' && (
+                <IconButton
+                  onClick={() => onDelete(file.filename)}
+                  aria-label="delete"
+                  sx={{
+                    color: buttonColor,
+                  }}
+                >
                   <DeleteIcon />
                 </IconButton>
-
-                {/* VIEW ICON */}
-                <IconButton
-                  aria-label="view"
-                  href={`http://localhost:5000/api/files/download/${encodeURIComponent(file.filename)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ color: buttonColor }}
-                >
-                  <VisibilityIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              )}
+              <IconButton
+                aria-label="view"
+                href={`${process.env.REACT_APP_API_BASE_URL}/files/download/${encodeURIComponent(
+                  file.filename
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: buttonColor,
+                }}
+              >
+                <VisibilityIcon />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+  
+  
   );
 };
 

@@ -127,7 +127,7 @@ const MajorRepairs = ({ open, user }) => {
       formData.append('file', new File([file], normalizedFileName, { type: file.type }));
 
       try {
-        const response = await fetch(`http://localhost:5000/api/files/vehicles-maintenance-majorrepairs/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/files/vehicles-maintenance-majorrepairs/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}`, {
           method: 'POST',
           body: formData,
         });
@@ -166,7 +166,7 @@ const MajorRepairs = ({ open, user }) => {
   
     const trimmedFilename = fileToDelete.trim();
     const encodedFilename = encodeURIComponent(trimmedFilename);
-    const deleteUrl = `http://localhost:5000/api/files/vehicles-maintenance-majorrepairs/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
+    const deleteUrl = `${process.env.REACT_APP_API_BASE_URL}/files/vehicles-maintenance-majorrepairs/${encodeURIComponent(selectedZone)}/${encodeURIComponent(selectedBranch)}/${encodedFilename}`;
   
     // Show snackbar right away with success message
     setSnackbarMessage(`File "${trimmedFilename}" is being deleted, Please Click Refresh Icon`);

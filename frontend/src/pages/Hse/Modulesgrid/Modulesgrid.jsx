@@ -40,9 +40,9 @@ const ModulesGrid = ({ user }) => {
         image: '/images/folder.webp',
         //path: '/Vehicles',
         subheadings: [
-          { title: 'First Aid', path: '/Hse/' },
+          { title: 'First Aid', path: '/Hse/FireAid' },
           { title: 'Fire Safety', path: '/Hse/FireSafety' },
-          { title: 'Emergency', path: '/Hse/' },
+          { title: 'Emergency', path: '/Hse/Emergency' },
         ],
       },
       {

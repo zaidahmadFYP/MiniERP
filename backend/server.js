@@ -1,3 +1,5 @@
+require('dotenv').config();
+console.log(process.env.MONGO_URI); 
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
@@ -5,22 +7,28 @@ const { GridFSBucket } = require('mongodb');
 const cors = require('cors');
 const { Readable } = require('stream');
 const path = require('path');
-//const Zone = require('./models/Zone'); // Import the Zone model
 
 
 // Initialize Express App
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
+//const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // MongoDB URI
-const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/mauwinapp';
+mongoose.connect(process.env.MONGO_URI, {
+}).then(() => {
+  console.log('MongoDB connected successfully');
+}).catch((err) => {
+  console.error('Error connecting to MongoDB:', err);
+});
+//mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mauwinapp');
 
 // Connect to MongoDB
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 const db = mongoose.connection;
@@ -33,6 +41,12 @@ db.once('open', async () => {
   console.log('GridFS initialized');
 
   await initializeZones();
+});
+
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 
@@ -812,13 +826,6 @@ app.delete('/api/tickets/:ticketId', async (req, res) => {
     console.error('Error deleting ticket:', error);
     res.status(500).json({ message: 'Server error' });
   }
-});
-
-// -----------------------------------------
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
 
 

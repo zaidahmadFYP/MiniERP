@@ -20,7 +20,7 @@ const AddLocationButton = ({ onLocationAdded }) => {
     if (!newLocationName.trim()) return;
 
     try {
-      const response = await fetch('http://localhost:5000/api/locations', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/locations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newLocationName.trim() })

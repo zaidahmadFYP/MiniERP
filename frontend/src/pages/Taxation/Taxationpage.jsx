@@ -7,20 +7,15 @@ import Banner from '../../Component/BannerComponent/BannerComponent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 
-const MainContent = styled(Box)(
-  ({ theme }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(4), 
-    backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#f5f5f5',
-    color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
-    minHeight: '100vh', 
-    transition: theme.transitions.create(['padding'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflow: 'hidden', 
-  })
-);
+const MainContent = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(4),
+  backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#f5f5f5',
+  color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
+  minHeight: '100vh', // Ensure it fills the viewport height
+  height: '100%',      // Ensure it takes full height
+  overflowY: 'auto',   // Allow vertical scrolling
+}));
 
 const Taxationpage = ({ user }) => {
   const theme = useTheme(); 
@@ -28,33 +23,47 @@ const Taxationpage = ({ user }) => {
 
   return (
     <MainContent>
-      <Box sx={{ mb: -5, ml:1 }}> 
-        <Banner />
-      </Box>
-      <Typography
-        variant="h4"
-        sx={{
-          color: headingColor,
-          mb: 4,
-          textAlign: 'left',
-          ml: 6,
-          fontSize: '30px',
-          fontFamily: 'TanseekModernW20',
-        }}
-      >
-        TAXATION
-      </Typography>
+    {/* Banner Section */}
+    <Box
+      sx={{
+        mt: { xs: 6, sm: 2 },  // Top margin: larger on mobile
+        ml: { xs: -1, sm: 1 },  // Left margin: none on mobile, small on desktop
+        mr: { xs: -1, sm: 0 },  // Right margin: none on both
+        mb: { xs: 1, sm: 4 },  // Bottom margin: small on mobile, larger on desktop
+      }}
+    >
+      <Banner />
+    </Box>
 
-      {/* Grid layout for the ModulesGrid */}
-      <Grid container spacing={2} alignItems="flex-start">
-        {/* Modules Grid Section */}
-        <Grid item xs={12}>
-          <Box sx={{ ml: 6, mt: -6 }}>
-            <ModulesGrid user={user}/>
-          </Box>
-        </Grid>
+    {/* Heading */}
+    <Typography
+      variant="h4"
+      sx={{
+        color: headingColor,
+        mb: 4,
+        textAlign: 'left',
+        ml: { xs: -2, sm: 6 },          // Responsive left margin
+        fontSize: { xs: '28px', sm: '32px' }, // Responsive font size
+        fontFamily: 'TanseekModernW20',
+      }}
+    >
+      SECURITY
+    </Typography>
+
+    {/* Modules Section */}
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Box
+          sx={{
+            mt: { xs: -2, sm: -6 }, // Negative top margin: smaller on mobile
+            ml: { xs: 2, sm: 6 },   // Left margin: smaller on mobile
+          }}
+        >
+          <ModulesGrid user={user} />
+        </Box>
       </Grid>
-    </MainContent>
+    </Grid>
+  </MainContent>
   );
 };
 
