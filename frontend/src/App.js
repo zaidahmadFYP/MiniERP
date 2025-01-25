@@ -91,7 +91,7 @@ function App() {
   // mobileOpen => for small screens (temporary drawer)
   const [mobileOpen, setMobileOpen] = useState(false);
   // desktopOpen => for large screens (mini vs. full permanent drawer)
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopOpen, setDesktopOpen] = useState(false);
 
   // ------------ Dark Mode ------------
   const [darkMode, setDarkMode] = useState(false);
