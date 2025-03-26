@@ -13,35 +13,8 @@ const Tile = ({ name, image }) => {
 
   const handleClick = () => {
     switch (name) {
-      case 'Licenses':
-        navigate('/Licenses/Licensepage');
-        break;
-      case 'Approvals':
-        navigate('/Approval/Approvalpage');
-        break;
-      case 'Vehicles':
-        navigate('/Vehicles/Vehiclepage');
-        break;
-      case 'User Requests':
-        navigate('/UserRequests');
-        break;
-      case 'Health Safety Environment':
-        navigate('/Hse/Hse');
-        break;
-      case 'Taxation':
-        navigate('/Taxation/Taxationpage');
-        break;
-      case 'Certificates':
-        navigate('/Certificate/Certificatepage');
-        break;
-      case 'Security':
-        navigate('/Security/GuardTraining');
-        break;
-      case 'Admin Policies and SOPs':
-        navigate('/AdminPolicies');
-        break;
-      case 'Rental Agreements':
-        navigate('/RentalAgreements');
+      case 'Retail and Commerce':
+        navigate('/RetailCommerce');
         break;
       case 'User Management':
         navigate('/UserManagement');
@@ -94,7 +67,7 @@ const Tile = ({ name, image }) => {
             sx={{
               fontSize: { xs: '13px', sm: '15px' }, // Smaller font on mobile
               fontWeight: 'bold',
-              fontFamily: 'Encode Sans',
+              fontFamily: 'Encode Sans, Arial, sans-serif',
               color: isDarkMode ? '#FFF' : '#000',
             }}
           >

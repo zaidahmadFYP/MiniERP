@@ -16,24 +16,22 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
+import { useTheme } from '@mui/material/styles'; // Import the useTheme hook
 
 const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) => {
   const [modules, setModules] = useState([]);
   const [checkedModules, setCheckedModules] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
+  const theme = useTheme(); // Access the current theme
+  const isDarkMode = theme.palette.mode === 'dark'; // Check if the current theme is dark
 
   useEffect(() => {
     setModules([
-      { main: 'Licenses', subModules: ['Trade Licenses', 'Staff Medicals', 'Tourism Licenses', 'Labour Licenses'] },
-      { main: 'Approvals', subModules: ['Outer Spaces'] },
-      { main: 'Vehicles', subModules: ['Maintenance', 'Token Taxes', 'Route Permits'] },
-      { main: 'Health Safety Environment', subModules: ['Monthly Inspection', 'Quarterly Audit', 'Expiry of Cylinders', 'Incidents', 'Training Status'] },
-      { main: 'Taxation', subModules: ['Marketing / Bill Boards Taxes', 'Profession Tax'] },
-      { main: 'Certificates', subModules: ['Electric Fitness Test'] },
-      { main: 'Security', subModules: ['Guard Training'] },
-      { main: 'User Requests', subModules: [] },
-      { main: 'Admin Policies and SOPs', subModules: [] },
-      { main: 'Rental Agreements', subModules: [] },
+      { main: 'Retail and Commerce', subModules: ['Store Transactions', 'POS Configuration', 'Reports'] },
+      { main: 'Product Information and Configuration', subModules: ['Product Addition', 'Product Categories', 'SKU Management', 'Product Pricing'] },
+      { main: 'Inventory Management', subModules: ['Stock Management', 'Warehouse Management', 'Stock Movements & Adjustments'] },
+      { main: 'Finance and Sales', subModules: ['Sales Order', 'Billing and Payments', 'Tax Configurations'] },
+      { main: 'Reports and Analytics', subModules: ['Sales Report', 'Inventory Report', 'Financial Analytics'] },
       { main: 'User Management', subModules: [] },
     ]);
 
@@ -90,7 +88,7 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
             width: '8px',
           },
           '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#f15a22',
+            backgroundColor: isDarkMode ? '#f15a22' : '#f15a22',
             borderRadius: '10px',
           },
         }}
@@ -102,6 +100,7 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
               key={module.main}
               sx={{
                 marginBottom: '4px', // Reduced gap between accordions
+                backgroundColor: isDarkMode ? '#333' : '#fff', // Adjust background based on mode
               }}
             >
               <AccordionSummary
@@ -116,9 +115,9 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
                   },
                 }}
               >
-                <Typography>{module.main}</Typography>
+                <Typography sx={{ color: isDarkMode ? '#fff' : '#000' }}>{module.main}</Typography>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{ backgroundColor: isDarkMode ? '#444' : '#f9f9f9' }}>
                 <FormGroup>
                   {module.subModules.map((subModule) => (
                     <FormControlLabel
@@ -128,14 +127,14 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
                           checked={!!checkedModules[`${module.main}_${subModule}`]}
                           onChange={handleModuleChange(module.main, subModule)}
                           sx={{
-                            color: '#f15a22',
+                            color: isDarkMode ? '#fff' : '#000', // Checkbox color based on mode
                             '&.Mui-checked': {
                               color: '#f15a22', // Checkbox color when checked
                             },
                           }}
                         />
                       }
-                      label={<Typography sx={{ color: '#fff' }}>{subModule}</Typography>}
+                      label={<Typography sx={{ color: isDarkMode ? '#fff' : '#000' }}>{subModule}</Typography>}
                     />
                   ))}
                 </FormGroup>
@@ -151,10 +150,10 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
                 justifyContent: 'space-between',
                 padding: '0 16px',
                 borderRadius: '4px',
-                backgroundColor: '#1c1c1c',
+                backgroundColor: isDarkMode ? '#1c1c1c' : '#f5f5f5', // Background color for non-expandable modules
                 height: moduleHeight,
                 marginBottom: '4px', // Reduced gap for non-expandable modules
-                boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+                boxShadow: isDarkMode ? '0px 1px 3px rgba(0, 0, 0, 0.2)' : '0px 1px 3px rgba(0, 0, 0, 0.1)',
               }}
             >
               <FormControlLabel
@@ -163,14 +162,14 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
                     checked={!!checkedModules[`${module.main}_`]}
                     onChange={handleModuleChange(module.main, '')}
                     sx={{
-                      color: '#f15a22',
+                      color: isDarkMode ? '#fff' : '#000', // Checkbox color based on mode
                       '&.Mui-checked': {
                         color: '#f15a22', // Checkbox color when checked
                       },
                     }}
                   />
                 }
-                label={<Typography sx={{ color: '#fff' }}>{module.main}</Typography>}
+                label={<Typography sx={{ color: isDarkMode ? '#fff' : '#000' }}>{module.main}</Typography>}
               />
             </Box>
           )
@@ -179,31 +178,51 @@ const EditAssignedModulesDrawer = ({ open, onClose, user, onModulesUpdated }) =>
     );
   };
 
-
   return (
     <>
       <Drawer
         anchor="right"
         open={open}
         onClose={onClose}
-        PaperProps={{ sx: { width: '40%', marginTop: '64px' } }}
+        PaperProps={{
+          sx: {
+            width: '40%',
+            marginTop: '64px',
+            backgroundColor: isDarkMode ? '#333' : '#fff', // Background color based on mode
+          },
+        }}
       >
         <Box sx={{ padding: 4 }}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
             Edit Assigned Modules
           </Typography>
           <Divider sx={{ mb: 3 }} />
           {renderModuleSelection()}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-            <Button onClick={onClose} sx={{
-              mr: 2, color: 'red', borderColor: 'red', '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                borderColor: 'red',
-              },
-            }}>
+            <Button
+              onClick={onClose}
+              sx={{
+                mr: 2,
+                color: isDarkMode ? 'red' : 'red',
+                borderColor: isDarkMode ? 'red' : 'red',
+                '&:hover': {
+                  backgroundColor: isDarkMode ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+                  borderColor: 'red',
+                },
+              }}
+            >
               Cancel
             </Button>
-            <Button variant="contained" onClick={handleSave} sx={{ backgroundColor: '#f15a22' }}>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              sx={{
+                backgroundColor: '#f15a22',
+                '&:hover': {
+                  backgroundColor: '#d3541e',
+                },
+              }}
+            >
               Save
             </Button>
           </Box>

@@ -25,7 +25,7 @@ import './AppBarComponent.css';
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: '#f15a22',
+  backgroundColor: '#4a0245',
   boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.5)',
 }));
 
@@ -151,10 +151,10 @@ function AppBarComponent({
               }}
             >
               <img
-                src="/images/muawin_logo_white.svg"
+                src="/images/loop2__1_-removebg-preview.png"
                 alt="Logo"
                 style={{
-                  width: isMobile ? 100 : 135,
+                  width: isMobile ? 100 : 80,
                   height: 'auto',
                   cursor: 'pointer',
                 }}
@@ -257,7 +257,7 @@ function AppBarComponent({
         {isMobile && mobileSearchOpen && (
           <Toolbar
             sx={{
-              backgroundColor: '#f15a22',
+              backgroundColor: '#4a0245',
               paddingLeft: '16px',
               paddingRight: '16px',
             }}

@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
-const drawerWidth = 300;
+const drawerWidth = 400;
 
 // For the expanded (full-width) desktop drawer
 const openedMixin = (theme) => ({
@@ -93,7 +93,7 @@ export default function DrawerComponent({
   // Sample items array
   const items = [
     {
-      text: 'Licenses',
+      text: 'Retail and Commerce',
       icon: '/images/licenses.webp',
       path: '/Licenses/Licensepage',
       submenu: [
@@ -104,13 +104,13 @@ export default function DrawerComponent({
       ],
     },
     {
-      text: 'Approvals',
+      text: 'Product Information and Management',
       icon: '/images/approved.webp',
       path: '/Approval/Approvalpage',
       submenu: [{ text: 'Outer Spaces', path: '/Approval/Approvalpage' }],
     },
     {
-      text: 'Vehicles',
+      text: 'Finance and Sales',
       icon: '/images/vehicle.webp',
       path: '/Vehicles/Vehiclepage',
       submenu: [
@@ -131,46 +131,14 @@ export default function DrawerComponent({
         { text: 'Incidents', path: '/Hse/Hse/incidents' },
       ],
     },
-    {
-      text: 'Taxation',
-      icon: '/images/taxation.webp',
-      path: '/Taxation/Taxationpage',
-      submenu: [
-        { text: 'Marketing / Bill Boards Taxes', path: '/Taxation/Taxationpage' },
-        { text: 'Profession Tax', path: '/Taxation/Taxationpage' },
-      ],
-    },
-    {
-      text: 'Certificates',
-      icon: '/images/certificate.webp',
-      path: '/Certificate/Certificatepage',
-      submenu: [{ text: 'Electric Fitness Test', path: '/Certificate/ElectricFitnessTest' }],
-    },
-    {
-      text: 'Security',
-      icon: '/images/security.webp',
-      path: '/Security/GuardTraining',
-    },
-    {
-      text: 'Admin Policies and SOPs',
-      icon: '/images/admin_icon.webp',
-      path: '/AdminPolicies',
-    },
-    {
-      text: 'Rental Agreements',
-      icon: '/images/rental_agreements.webp',
-      path: '/RentalAgreements',
-    },
+    
+   //User Managament
     {
       text: 'User Management',
       icon: '/images/user_management.webp',
       path: '/UserManagement',
     },
-    {
-      text: 'User Tickets',
-      icon: '/images/user_icon.webp',
-      path: '/UserRequests',
-    },
+
   ];
 
   // Filter top-level items

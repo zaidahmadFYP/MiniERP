@@ -215,6 +215,9 @@ app.delete('/api/zones/:zoneId/deleteBranch', async (req, res) => {
 
 // --------------------------------- User Authentication ---------------------------------
 
+// const mongoose = require('mongoose');
+// const bcrypt = require('bcrypt');
+
 const userSchema = new mongoose.Schema({
   name: String,
   displayName: String,
@@ -231,25 +234,23 @@ const userSchema = new mongoose.Schema({
   password: String, // Hashed password
   plainPassword: String, // New field for storing plain password
   role: String,
-  zone: String,
-  branch: String,
-  registeredModules: Array
+  registeredModules: Array, // List of modules the user has access to
 });
 
 const User = mongoose.model('User', userSchema);
 
+
 // Create a new user (for testing purposes or dynamic user creation)
 const bcrypt = require('bcrypt');
-
 app.post('/api/users', async (req, res) => {
   try {
-    const { firstName, lastName, displayName, username, password, role, zone, branch, modules } = req.body;
+    const { firstName, lastName, displayName, username, password, role, modules } = req.body;
 
-    if (!firstName || !lastName || !displayName || !username || !password || !role || !zone || !branch) {
+    if (!firstName || !lastName || !displayName || !username || !password || !role || !modules) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const email = `${username}@cheezious.com`;
+    const email = `${username}@loop.com`; // Updated email format
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -266,9 +267,7 @@ app.post('/api/users', async (req, res) => {
       password: hashedPassword,
       plainPassword: password, // Save the plain password
       role,
-      zone,
-      branch,
-      registeredModules: modules
+      registeredModules: modules,
     });
 
     await newUser.save();
@@ -279,7 +278,6 @@ app.post('/api/users', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
-
 
 app.post('/api/auth/signin', async (req, res) => {
   try {
@@ -311,9 +309,7 @@ app.post('/api/auth/signin', async (req, res) => {
     res.status(200).json({
       name: user.name,
       email: user.email,
-      branch: user.branch,
       role: user.role,
-      zone: user.zone,
       registeredModules: user.registeredModules,
     });
   } catch (error) {
@@ -321,6 +317,7 @@ app.post('/api/auth/signin', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 
 
 app.get('/api/users', async (req, res) => {
@@ -335,11 +332,15 @@ app.get('/api/users', async (req, res) => {
 
 app.put('/api/users/:id', async (req, res) => {
   try {
-    const { name, displayName, username, branch, role, password, zone } = req.body; // Add zone
+    const { name, displayName, username, role, password, modules } = req.body;
+
+    if (!name || !displayName || !role || !modules) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { name, displayName, username, branch, role, password, zone }, // Include zone in the update
+      { name, displayName, username, role, password, registeredModules: modules },
       { new: true }
     );
     if (!updatedUser) {
@@ -404,19 +405,16 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
-// Update user's modules
+//Update Users Module's
 app.put('/api/users/:id/modules', async (req, res) => {
-  console.log(`Request received to update modules for user: ${req.params.id}`);
-  
+  const { modules } = req.body;
+  const userId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).send({ message: 'Invalid User ID' });
+  }
+
   try {
-    const { modules } = req.body;
-    const userId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log('Invalid User ID:', userId);
-      return res.status(400).send({ message: 'Invalid User ID' });
-    }
-
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { registeredModules: modules },
@@ -424,7 +422,6 @@ app.put('/api/users/:id/modules', async (req, res) => {
     );
 
     if (!updatedUser) {
-      console.log('User not found:', userId);
       return res.status(404).send({ message: 'User not found' });
     }
 
@@ -435,35 +432,29 @@ app.put('/api/users/:id/modules', async (req, res) => {
   }
 });
 
+//Delete User
 app.delete('/api/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Log the ID received
-    console.log(`Received request to delete user with ID: ${id}`);
-
-    // Ensure the ID is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      console.log('Invalid user ID');
-      return res.status(400).json({ message: 'Invalid user ID', status: 'error' });
+      return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    // Find and delete the user
     const deletedUser = await User.findByIdAndDelete(id);
 
     if (!deletedUser) {
-      console.log('User not found');
-      return res.status(404).json({ message: 'User not found', status: 'error' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('User deleted successfully');
-    return res.status(200).json({ message: 'User deleted successfully', status: 'success' });
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
-    return res.status(500).json({ message: 'Internal server error', status: 'error' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+//Reset User's Password
 app.put('/api/users/:id/resetPassword', async (req, res) => {
   try {
     const { newPassword } = req.body;
@@ -472,10 +463,8 @@ app.put('/api/users/:id/resetPassword', async (req, res) => {
       return res.status(400).json({ message: 'New password is required' });
     }
 
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update both hashed and plain passwords in the database
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       { password: hashedPassword, plainPassword: newPassword },

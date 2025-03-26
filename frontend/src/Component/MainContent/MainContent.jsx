@@ -15,6 +15,7 @@ import TilesGrid from '../TileGrid/TileGrid';
 import TabsComponent from '../TabComponent/TabComponent'; // Ensure correct path
 import AnnouncementForm from './AnnouncementForm';
 import TaskForm from './TaskForm';
+import RetailCommerce from '../../pages/RetailCommerce/RetailCommerce';
 
 const MainContent = ({ user }) => {
   const theme = useTheme();
@@ -27,16 +28,12 @@ const MainContent = ({ user }) => {
 
   const tiles = useMemo(() => {
     const allTiles = [
-      { name: 'Licenses', image: '/images/licenses.webp' },
-      { name: 'Approvals', image: '/images/approved.webp' },
-      { name: 'Vehicles', image: '/images/vehicle.webp' },
-      { name: 'User Tickets', image: '/images/user_icon.webp' },
-      { name: 'Health Safety Environment', image: '/images/hse.webp' },
-      { name: 'Taxation', image: '/images/taxation.webp' },
-      { name: 'Certificates', image: '/images/certificate.webp' },
-      { name: 'Security', image: '/images/security.webp' },
-      { name: 'Admin Policies and SOPs', image: '/images/admin_icon.webp' },
-      { name: 'Rental Agreements', image: '/images/rental_agreements.webp' },
+      { name: 'Retail and Commerce', image: '/images/licenses.webp' },
+      { name: 'Product Information and Management', image: '/images/approved.webp' },
+      { name: 'Finance and Sales', image: '/images/vehicle.webp' },
+      { name: 'Inventory Management', image: '/images/vehicle.webp' },
+      { name: 'Reports and Analytics', image: '/images/vehicle.webp' },
+      // Add User Management tile
       { name: 'User Management', image: '/images/user_management.webp' },
     ];
     return allTiles.filter((tile) =>
@@ -57,16 +54,7 @@ const MainContent = ({ user }) => {
 
   const handleTileClick = (tileName) => {
     const paths = {
-      Licenses: '/Licenses/Licensepage',
-      Approvals: '/Approval/Approvalpage',
-      Vehicles: '/Vehicles/Vehiclepage',
-      UserRequests: '/UserRequests/UserRequests',
-      'Health Safety Environment': '/Hse/Hse',
-      Taxation: '/Taxation/Taxationpage',
-      Certificates: '/Certificate/Certificatepage',
-      Security: '/Security/GuardTraining',
-      'Admin Policies and SOPs': '/AdminPolicies/AdminPolicies',
-      'Rental Agreements': '/RentalAgreements/RentalAgreements',
+      RetailCommerce: '/RetailCommerce/RetailCommerce',
       'User Management': '/UserManagement/UserManagement',
     };
     navigate(paths[tileName], { state: { tileName } });
@@ -106,7 +94,7 @@ const MainContent = ({ user }) => {
           textAlign: 'left',
           ml: isMobile ? 2 : 6,
           fontSize: isMobile ? '24px' : '30px',
-          fontFamily: 'TanseekModernW20',
+          fontFamily: 'TanseekModernPro-Bold, Arial ,sans-serif',
         }}
       >
         MODULES
@@ -132,7 +120,7 @@ const MainContent = ({ user }) => {
                 gap: isMobile ? 1 : 0, // Add gap between buttons on mobile
               }}
             >
-              <Button
+              {/* <Button
                 variant="contained"
                 className="expanding-button"
                 sx={{
@@ -166,7 +154,7 @@ const MainContent = ({ user }) => {
                 onClick={() => setShowTaskForm(true)}
               >
                 Add Task
-              </Button>
+              </Button> */}
             </Box>
           )}
 
@@ -190,30 +178,30 @@ const MainContent = ({ user }) => {
               },
             }}
           >
-            <TabsComponent
+            {/* <TabsComponent
               latestAnnouncement={latestAnnouncement}
               userId={user?._id?.toString()}
               userZone={user?.zone}
               userBranch={user?.branch}
               userEmail={user?.email}
-            />
+            /> */}
           </Box>
         </Grid>
       </Grid>
 
       {/* Modals */}
-      {showAnnouncementForm && (
+      {/* {showAnnouncementForm && (
         <AnnouncementForm onClose={() => setShowAnnouncementForm(false)} user={user} />
-      )}
+      )} */}
 
-      {showTaskForm && (
+      {/* {showTaskForm && (
         <TaskForm
           onClose={() => setShowTaskForm(false)}
           userId={user?._id}
           userZone={user?.zone}
           userBranch={user?.branch}
         />
-      )}
+      )} */}
     </Box>
   );
 };

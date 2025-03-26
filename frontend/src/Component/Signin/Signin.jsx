@@ -29,7 +29,7 @@ const BackgroundImage = styled(Box)(({ theme }) => ({
   left: 0,
   height: "100%",
   width: "100%",
-  backgroundImage: `url(${process.env.PUBLIC_URL}/images/background.jpg)`,
+  backgroundImage: `url(${process.env.PUBLIC_URL}/images/signin_background.png)`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   zIndex: 1,
@@ -220,14 +220,14 @@ function SignInPage({ onLogin }) {
         <CustomPaper elevation={3}>
           <RightContainer>
             <ResponsiveImage
-              src={`${process.env.PUBLIC_URL}/images/muawin_signin.jpg`}
+              src={`${process.env.PUBLIC_URL}/images/signin.png`}
               alt="Cheezious"
             />
           </RightContainer>
           <LeftContainer>
             <Box
               component="img"
-              src={`${process.env.PUBLIC_URL}/images/muawin_logo_orange.png`}
+              src={`${process.env.PUBLIC_URL}/images/loop1.png`}
               alt="Logo"
               sx={{
                 width: { xs: "200px", sm: "250px", md: "300px" },

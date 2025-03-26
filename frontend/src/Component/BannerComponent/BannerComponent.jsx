@@ -28,7 +28,7 @@ const Banner = () => {
       }}
     >
       <img
-        src={`${process.env.PUBLIC_URL}/images/muawin_banner.jpg`}
+        src={`${process.env.PUBLIC_URL}/images/banner.png`}
         alt="Banner"
         style={{
           // Always scale to 100% width of the container,

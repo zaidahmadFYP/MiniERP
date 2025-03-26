@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Drawer,
   Stepper,
@@ -27,58 +27,28 @@ import {
   TableCell,
   TableRow,
   useTheme,
-  Snackbar, // Import Snackbar for notifications
-  Alert, // Import Alert for styled messages
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios'; // Import axios for API calls
 
 const steps = ['Basics', 'Manage Roles', 'Manage Modules', 'Finish'];
 
 const headquarterRoles = [
-  'IT', 'Admin', 'HR', 'Operations', 'Training and Development',
-  'Maintainance', 'Warehouse - Humik',
-  'Warehouse - Construction', 'Purchase', 'Surveillance', 'Finance'
+  'IT', 'Admin', 'HR', 'Operations', 
+  'Finance'
 ];
-const branchRoles = ['Restaurant Manager'];
+
+const branchRoles = ['Cashier', 'Manager'];
 
 const modules = [
-  { main: 'Licenses', subModules: ['Trade Licenses', 'Staff Medicals', 'Tourism Licenses', 'Labour Licenses'] },
-  { main: 'Approvals', subModules: ['Outer Spaces'] },
-  { main: 'Vehicles', subModules: ['Maintenance', 'Token Taxes', 'Route Permits'] },
-  { main: 'User Requests', subModules: [] },
-  { main: 'Health Safety Environment', subModules: ['Monthly Inspection', 'Quarterly Audit', 'Expiry of Cylinders', 'Incidents', 'Training Status'] },
-  { main: 'Taxation', subModules: ['Marketing / Bill Boards Taxes', 'Profession Tax'] },
-  { main: 'Certificates', subModules: ['Electric Fitness Test'] },
-  { main: 'Security', subModules: ['Guard Training'] },
-  { main: 'Admin Policies and SOPs', subModules: [] },
-  { main: 'Rental Agreements', subModules: [] },
+  { main: 'Retail and Commerce', subModules: ['Store Transactions', 'POS Configuration', 'Reports'] },
+  { main: 'Product Information and Configuration', subModules: ['Product Addition','Product Categories','SKU Management','Product Pricing'] },
+  { main: 'Inventory Management', subModules: ['Stock Management', 'Warehouse Management','Stock Movements & Adjustments'] },
+  { main: 'Finance and Sales', subModules: ['Sales Order','Billing and Payments','Tax Configurations'] },
+  { main: 'Reports and Analytics', subModules: ['Sales Report', 'Inventory Report', 'Financial Analytics'] },
   { main: 'User Management', subModules: [] },
 ];
-
-// Predefined modules for Restaurant Manager
-const preSelectedModulesForRestaurantManager = {
-  'Health Safety Environment_Monthly Inspection': true,
-  'Health Safety Environment_Quarterly Audit': true,
-  'Health Safety Environment_Expiry of Cylinders': true,
-  'Health Safety Environment_Incidents': true,
-  'Health Safety Environment_Training Status': true,
-  'User Requests_': true,
-  'Licenses_Trade Licenses': true,
-  'Licenses_Staff Medicals': true,
-  'Licenses_Tourism Licenses': true,
-  'Licenses_Labour Licenses': true,
-  'Approvals_Outer Spaces': true,
-  'Vehicles_Maintenance': true,
-  'Vehicles_Token Taxes': true,
-  'Vehicles_Route Permits': true,
-  'Taxation_Marketing / Bill Boards Taxes': true,
-  'Taxation_Profession Tax': true,
-  'Rental Agreements_': true,
-  'Admin Policies and SOPs_': true,
-  'Security_Guard Training': true,
-  'Certificates_Electric Fitness Test': true
-};
 
 const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -86,11 +56,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   const [role, setRole] = useState('');
   const [customRole, setCustomRole] = useState('');
   const [checkedModules, setCheckedModules] = useState({});
-  const [zones, setZones] = useState([]); // State for zones
-  const [branches, setBranches] = useState([]); // State for branches
-  const [selectedZone, setSelectedZone] = useState(''); // State for selected zone
-  const [selectedBranch, setSelectedBranch] = useState(''); // State for selected branch
-  const [notificationOpen, setNotificationOpen] = useState(false); // State for Snackbar
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
@@ -109,39 +75,6 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   const [generatePassword, setGeneratePassword] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState('');
 
-  // Fetch zones from the server
-  useEffect(() => {
-    const fetchZones = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/zones`);
-        setZones(response.data); // Update state with fetched zones
-      } catch (error) {
-        console.error('Error fetching zones:', error);
-      }
-    };
-
-    fetchZones();
-  }, []);
-
-  // Fetch branches based on selected zone
-  useEffect(() => {
-    if (selectedZone) {
-      const fetchBranches = async () => {
-        try {
-          const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/zones/${selectedZone}/branches`);
-          setBranches(response.data); // Update branches state
-        } catch (error) {
-          console.error('Error fetching branches:', error);
-          setBranches([]); // Clear branches on error
-        }
-      };
-
-      fetchBranches();
-    } else {
-      setBranches([]); // Clear branches if no zone is selected
-    }
-  }, [selectedZone]);
-
   // Reset function to clear drawer state when closed
   const resetDrawer = () => {
     setActiveStep(0);
@@ -149,8 +82,6 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
     setRole('');
     setCustomRole('');
     setCheckedModules({});
-    setSelectedZone('');
-    setSelectedBranch('');
     setFormValues({
       firstName: '',
       lastName: '',
@@ -170,7 +101,6 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
       [name]: value,
     };
 
-    // Update the displayName automatically based on firstName and lastName
     if (name === 'firstName' || name === 'lastName') {
       updatedValues.displayName = `${updatedValues.firstName} ${updatedValues.lastName}`.trim();
     }
@@ -188,10 +118,10 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   // Handle role type change
   const handleRoleTypeChange = (e) => {
     setRoleType(e.target.value);
-    setRole(''); // Clear selected role or input
-    setCheckedModules({}); // Clear pre-selected modules
+    setRole('');
+    setCheckedModules({});
     if (e.target.value !== 'Custom Role') {
-      setCustomRole(''); // Reset custom role if not selected
+      setCustomRole('');
     }
   };
 
@@ -199,19 +129,13 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   const handleRoleChange = (e) => {
     const selectedRole = e.target.value;
     setRole(selectedRole);
-
-    // If the selected role is Restaurant Manager, pre-select the modules
-    if (selectedRole === 'Restaurant Manager') {
-      setCheckedModules(preSelectedModulesForRestaurantManager);
-    } else {
-      setCheckedModules({}); // Clear modules for other roles
-    }
+    setCheckedModules({});
   };
 
   // Handle custom role input
   const handleCustomRoleChange = (e) => {
     setCustomRole(e.target.value);
-    setRole(e.target.value); // Set the custom role as the role value
+    setRole(e.target.value);
   };
 
   // Password generation function
@@ -231,7 +155,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
       const newPassword = generateRandomPassword();
       setGeneratedPassword(newPassword);
     } else {
-      setGeneratedPassword(''); // Clear password if unchecked
+      setGeneratedPassword('');
     }
   };
 
@@ -253,25 +177,33 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
     }
     if (!generatePassword) {
       errors.generatePassword = 'You must generate a password';
-      //alert('Please select "Generate New Password" before proceeding.');
     }
 
     setFormErrors(errors);
-
-    // If there are no errors, return true
     return Object.keys(errors).length === 0;
   };
 
   const handleNext = () => {
     if (activeStep === 0 && validateForm()) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 1 && (role === 'Cashier' || role === 'Manager')) {
+      // Skip Manage Modules step if the role is Cashier or Manager
+      setActiveStep(3);  // Directly go to Finish step
     } else if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === 3) { // If we're on the Finish step
+      if (role === 'Cashier' || role === 'Manager') {
+        setActiveStep(1); // Go back to Manage Roles for Cashier/Manager
+      } else {
+        setActiveStep(2); // Go back to Manage Modules for other roles
+      }
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
   };
 
   // Handle module selection for Manage Modules step
@@ -309,7 +241,24 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
 
   // Render formatted modules in the Review Details step
   const renderModules = () => {
+
+    if (role === 'Cashier' || role === 'Manager') {
+      return (
+        <Box sx={{ mb: 2 }}>
+          <Typography>None</Typography>
+        </Box>
+      );
+    }
+
     const formattedModules = formatModules();
+
+    if (formattedModules.length === 0) {
+      return (
+        <Box sx={{ mb: 2 }}>
+          <Typography>None</Typography>
+        </Box>
+      );
+    }
 
     return formattedModules.map((module) => (
       <Box key={module.main} sx={{ mb: 2 }}>
@@ -363,18 +312,17 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
           },
         }}
       >
-        {/* Modules with Submodules */}
         {modulesWithSubModules.map((module) => (
           <Accordion key={module.main} sx={{ marginBottom: 0 }}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon sx={{ color: isDarkMode ? '#fff' : '#000' }} />}
               sx={{
-                minHeight: '32px', // Decrease the height further
+                minHeight: '32px',
                 '&.Mui-expanded': {
-                  minHeight: '32px', // Maintain the compact height when expanded
+                  minHeight: '32px',
                 },
                 '.MuiAccordionSummary-content': {
-                  margin: '4px 0', // Reduce inner content spacing
+                  margin: '4px 0',
                 },
               }}
             >
@@ -387,7 +335,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
                       !module.subModules.every((sub) => !!checkedModules[`${module.main}_${sub}`])
                     }
                     onChange={(e) => {
-                      e.stopPropagation(); // Prevent accordion from toggling
+                      e.stopPropagation();
                       handleSelectAllSubmodules(module.main, e.target.checked);
                     }}
                     sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
@@ -399,7 +347,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
                   </Typography>
                 }
                 sx={{ marginRight: 1 }}
-                onClick={(e) => e.stopPropagation()} // Prevent accordion from toggling when clicking on the label
+                onClick={(e) => e.stopPropagation()}
               />
             </AccordionSummary>
             <AccordionDetails>
@@ -422,17 +370,16 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
           </Accordion>
         ))}
   
-        {/* Modules without Submodules */}
         {modulesWithoutSubModules.map((module) => (
           <Accordion key={module.main} sx={{ marginBottom: 0 }}>
             <AccordionSummary
               sx={{
-                minHeight: '32px', // Decrease the height further
+                minHeight: '32px',
                 '&.Mui-expanded': {
-                  minHeight: '32px', // Maintain the compact height when expanded
+                  minHeight: '32px',
                 },
                 '.MuiAccordionSummary-content': {
-                  margin: '4px 0', // Reduce inner content spacing
+                  margin: '4px 0',
                 },
               }}
             >
@@ -441,7 +388,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
                   <Checkbox
                     checked={!!checkedModules[`${module.main}_`]}
                     onChange={(e) => {
-                      e.stopPropagation(); // Prevent accordion from toggling
+                      e.stopPropagation();
                       handleModuleChange(module.main, '')(e);
                     }}
                     sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
@@ -453,7 +400,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
                   </Typography>
                 }
                 sx={{ marginRight: 1 }}
-                onClick={(e) => e.stopPropagation()} // Prevent accordion from toggling when clicking on the label
+                onClick={(e) => e.stopPropagation()}
               />
             </AccordionSummary>
           </Accordion>
@@ -461,8 +408,6 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
       </Box>
     );
   };
-  
-  
 
   // Handle finish and submit user
   const handleFinish = async () => {
@@ -473,12 +418,8 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
       username: formValues.username.trim(),
       password: generatedPassword || formValues.password,
       role: role,
-      zone: selectedZone,
-      branch: selectedBranch,
       modules: Object.keys(checkedModules).filter((moduleKey) => checkedModules[moduleKey]),
     };
-
-    console.log("Password being sent to backend:", generatedPassword);
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/users`, {
@@ -493,7 +434,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
         const data = await response.json();
         console.log('User created:', data);
         onClose();
-        setNotificationOpen(true); // Open the notification
+        setNotificationOpen(true);
       } else {
         console.error('Error creating user:', response.statusText);
       }
@@ -503,8 +444,346 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
   };
 
   const handleNotificationClose = () => {
-    setNotificationOpen(false); // Close the notification
+    setNotificationOpen(false);
   };
+
+  // Render the drawer content based on active step
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <>
+            <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
+              Set up the basics
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <TextField
+                  label="First Name"
+                  fullWidth
+                  name="firstName"
+                  variant="outlined"
+                  value={formValues.firstName}
+                  onChange={handleInputChange}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!formErrors.firstName}
+                  helperText={formErrors.firstName}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#d1d1d1',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                    },
+                    '& label.Mui-focused': {
+                      color: '#f15a22',
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Last Name"
+                  fullWidth
+                  name="lastName"
+                  variant="outlined"
+                  value={formValues.lastName}
+                  onChange={handleInputChange}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!formErrors.lastName}
+                  helperText={formErrors.lastName}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#d1d1d1',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                    },
+                    '& label.Mui-focused': {
+                      color: '#f15a22',
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Display Name"
+                  fullWidth
+                  name="displayName"
+                  variant="outlined"
+                  value={formValues.displayName}
+                  onChange={handleInputChange}
+                  InputLabelProps={{ shrink: true }}
+                  error={!!formErrors.displayName}
+                  helperText={formErrors.displayName}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#d1d1d1',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#f15a22',
+                      },
+                    },
+                    '& label.Mui-focused': {
+                      color: '#f15a22',
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <TextField
+                    label="Username"
+                    fullWidth
+                    name="username"
+                    variant="outlined"
+                    value={formValues.username}
+                    onChange={handleInputChange}
+                    InputLabelProps={{ shrink: true }}
+                    error={!!formErrors.username}
+                    helperText={formErrors.username}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: '#d1d1d1',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#f15a22',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#f15a22',
+                        },
+                      },
+                      '& label.Mui-focused': {
+                        color: '#f15a22',
+                      },
+                    }}
+                  />
+                  <Typography sx={{ marginLeft: 1, color: isDarkMode ? '#fff' : '#000' }}>
+                    @loop.com
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={generatePassword}
+                      onChange={handlePasswordGenerationChange}
+                      sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
+                    />
+                  }
+                  label="Generate New Password"
+                />
+                {formErrors.generatePassword && (
+                  <Typography sx={{ color: '#f44336', mt: 1 }}>
+                    {formErrors.generatePassword}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
+          </>
+        );
+      case 1:
+        return (
+          <>
+            <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
+              Manage Roles
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <FormControl component="fieldset">
+              <FormLabel
+                component="legend"
+                sx={{
+                  color: '#f15a22',
+                  '&.Mui-focused': {
+                    color: '#f15a22',
+                  },
+                }}
+              >
+                Select Type
+              </FormLabel>
+              <RadioGroup row value={roleType} onChange={handleRoleTypeChange}>
+                <FormControlLabel
+                  value="Headquarter Roles"
+                  control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
+                  label="Department"
+                />
+                <FormControlLabel
+                  value="Branch Roles"
+                  control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
+                  label="Branch"
+                />
+                <FormControlLabel
+                  value="Custom Role"
+                  control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
+                  label="Custom"
+                />
+              </RadioGroup>
+            </FormControl>
+
+            {roleType === 'Custom Role' && (
+              <TextField
+                label="Enter Custom Role"
+                fullWidth
+                variant="outlined"
+                value={customRole}
+                onChange={handleCustomRoleChange}
+                sx={{
+                  mt: 3,
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#d1d1d1',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#f15a22',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#f15a22',
+                    },
+                  },
+                  '& label.Mui-focused': {
+                    color: '#f15a22',
+                  },
+                }}
+              />
+            )}
+
+            {roleType !== 'Custom Role' && roleType === 'Headquarter Roles' ? (
+              <FormControl fullWidth sx={{ mt: 3 }}>
+                <Select
+                  value={role}
+                  onChange={handleRoleChange}
+                  displayEmpty
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '& .MuiSelect-icon': {
+                      color: '#f15a22',
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Department
+                  </MenuItem>
+                  {headquarterRoles.map((r) => (
+                    <MenuItem key={r} value={r}>
+                      {r}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : roleType !== 'Custom Role' && (
+              <FormControl fullWidth sx={{ mt: 3 }}>
+                <Select
+                  value={role}
+                  onChange={handleRoleChange}
+                  displayEmpty
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#f15a22',
+                    },
+                    '& .MuiSelect-icon': {
+                      color: '#f15a22',
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Branch Role
+                  </MenuItem>
+                  {branchRoles.map((r) => (
+                    <MenuItem key={r} value={r}>
+                      {r}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          </>
+        );
+      case 2:
+        return (
+          <>
+            <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
+              Manage Modules
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            {renderModuleSelection()}
+          </>
+        );
+      case 3:
+        return (
+          <>
+            <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
+              Review Details
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell variant="head"><strong>Name:</strong></TableCell>
+                  <TableCell>{formValues.firstName} {formValues.lastName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell variant="head"><strong>Display Name:</strong></TableCell>
+                  <TableCell>{formValues.displayName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell variant="head"><strong>Username:</strong></TableCell>
+                  <TableCell>{formValues.username}@loop.com</TableCell>
+                </TableRow>
+                {generatePassword && (
+                  <TableRow>
+                    <TableCell variant="head"><strong>Generated Password:</strong></TableCell>
+                    <TableCell>{generatedPassword}</TableCell>
+                  </TableRow>
+                )}
+                <TableRow>
+                  <TableCell variant="head"><strong>Role:</strong></TableCell>
+                  <TableCell>{role}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell variant="head"><strong>Selected Modules:</strong></TableCell>
+                  <TableCell>{renderModules()}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  
 
   return (
     <Drawer
@@ -572,411 +851,7 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
             }
           }}
         >
-          {activeStep === 0 ? (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
-                Set up the basics
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              <Grid container spacing={3}>
-                <Grid item xs={6}>
-                  <TextField
-                    label="First Name"
-                    fullWidth
-                    name="firstName"
-                    variant="outlined"
-                    value={formValues.firstName}
-                    onChange={handleInputChange}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!formErrors.firstName}
-                    helperText={formErrors.firstName}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: '#d1d1d1',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                      },
-                      '& label.Mui-focused': {
-                        color: '#f15a22',
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    label="Last Name"
-                    fullWidth
-                    name="lastName"
-                    variant="outlined"
-                    value={formValues.lastName}
-                    onChange={handleInputChange}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!formErrors.lastName}
-                    helperText={formErrors.lastName}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: '#d1d1d1',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                      },
-                      '& label.Mui-focused': {
-                        color: '#f15a22',
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Display Name"
-                    fullWidth
-                    name="displayName"
-                    variant="outlined"
-                    value={formValues.displayName}
-                    onChange={handleInputChange}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!formErrors.displayName}
-                    helperText={formErrors.displayName}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: '#d1d1d1',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#f15a22',
-                        },
-                      },
-                      '& label.Mui-focused': {
-                        color: '#f15a22',
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <TextField
-                      label="Username"
-                      fullWidth
-                      name="username"
-                      variant="outlined"
-                      value={formValues.username}  // Do not append @cheezious.com here
-                      onChange={handleInputChange}  // Keep it as raw input
-                      InputLabelProps={{ shrink: true }}
-                      error={!!formErrors.username}
-                      helperText={formErrors.username}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          '& fieldset': {
-                            borderColor: '#d1d1d1',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: '#f15a22',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#f15a22',
-                          },
-                        },
-                        '& label.Mui-focused': {
-                          color: '#f15a22',
-                        },
-                      }}
-                    />
-                    <Typography sx={{ marginLeft: 1, color: isDarkMode ? '#fff' : '#000' }}>
-                      @cheezious.com
-                    </Typography>
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={generatePassword}
-                        onChange={handlePasswordGenerationChange}
-                        sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }}
-                      />
-                    }
-                    label="Generate New Password"
-                  />
-                  {formErrors.generatePassword && (
-                    <Typography sx={{ color: '#f44336', mt: 1 }}>
-                      {formErrors.generatePassword}
-                    </Typography>
-                  )}
-                </Grid>
-
-              </Grid>
-            </>
-          ) : activeStep === 1 ? (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
-                Manage Roles
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              <FormControl component="fieldset">
-                <FormLabel
-                  component="legend"
-                  sx={{
-                    color: '#f15a22',
-                    '&.Mui-focused': {
-                      color: '#f15a22',
-                    },
-                  }}
-                >
-                  Select Type
-                </FormLabel>
-                <RadioGroup row value={roleType} onChange={handleRoleTypeChange}>
-                  <FormControlLabel
-                    value="Headquarter Roles"
-                    control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Department"
-                  />
-                  <FormControlLabel
-                    value="Branch Roles"
-                    control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Branch"
-                  />
-                  <FormControlLabel
-                    value="Custom Role"
-                    control={<Radio sx={{ color: '#f15a22', '&.Mui-checked': { color: '#f15a22' } }} />}
-                    label="Custom"
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              {roleType === 'Custom Role' && (
-                <TextField
-                  label="Enter Custom Role"
-                  fullWidth
-                  variant="outlined"
-                  value={customRole}
-                  onChange={handleCustomRoleChange}
-                  sx={{
-                    mt: 3,
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#d1d1d1',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#f15a22',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#f15a22',
-                      },
-                    },
-                    '& label.Mui-focused': {
-                      color: '#f15a22',
-                    },
-                  }}
-                />
-              )}
-
-              {roleType !== 'Custom Role' && roleType === 'Headquarter Roles' ? (
-                <FormControl fullWidth sx={{ mt: 3 }}>
-                  <Select
-                    value={role}
-                    onChange={handleRoleChange}
-                    displayEmpty
-                    sx={{
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '& .MuiSelect-icon': {
-                        color: '#f15a22',
-                      },
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      Select Department
-                    </MenuItem>
-                    {headquarterRoles.map((r) => (
-                      <MenuItem key={r} value={r}>
-                        {r}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : roleType !== 'Custom Role' && (
-                <FormControl fullWidth sx={{ mt: 3 }}>
-                  <Select
-                    value={role}
-                    onChange={handleRoleChange}
-                    displayEmpty
-                    sx={{
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#f15a22',
-                      },
-                      '& .MuiSelect-icon': {
-                        color: '#f15a22',
-                      },
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      Select Branch Role
-                    </MenuItem>
-                    {branchRoles.map((r) => (
-                      <MenuItem key={r} value={r}>
-                        {r}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-
-              {/* New Dropdowns for Zone and Branch */}
-              <FormControl fullWidth sx={{ mt: 3 }}>
-                <Select
-                  value={selectedZone}
-                  onChange={(e) => setSelectedZone(e.target.value)}
-                  displayEmpty
-                  sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '& .MuiSelect-icon': {
-                      color: '#f15a22',
-                    },
-                  }}
-                >
-                  <MenuItem value="" disabled>
-                    Select Zone
-                  </MenuItem>
-                  {zones.map((zone) => (
-                    <MenuItem key={zone._id} value={zone.zoneName}>
-                      {zone.zoneName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth sx={{ mt: 3 }}>
-                {console.log('Selected Branch:', selectedBranch)} {/* Debugging for selectedBranch */}
-                {console.log('Branches:', branches)} {/* Debugging for branches */}
-
-                <Select
-                  value={selectedBranch || ""} // Ensure it has a fallback value
-                  onChange={(e) => {
-                    console.log('Branch Selected:', e.target.value); // Log the selected branch
-                    setSelectedBranch(e.target.value); // Update the selectedBranch state
-                  }}
-                  displayEmpty
-                  sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#f15a22',
-                    },
-                    '& .MuiSelect-icon': {
-                      color: '#f15a22',
-                    },
-                  }}
-                >
-                  <MenuItem value="" disabled>
-                    {branches.length === 0 ? "No Zone Selected" : "Select Branch"}
-                  </MenuItem>
-
-                  {branches.length > 0 &&
-                    branches.map((branch, index) => {
-                      return (
-                        <MenuItem key={index} value={branch}>
-                          {branch} {/* Directly using the string as the label and value */}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </FormControl>
-            </>
-          ) : activeStep === 2 ? (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
-                Manage Modules
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              {renderModuleSelection()}
-            </>
-          ) : activeStep === 3 ? (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ color: isDarkMode ? '#fff' : '#000' }}>
-                Review Details
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Name:</strong></TableCell>
-                    <TableCell>{formValues.firstName} {formValues.lastName}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Display Name:</strong></TableCell>
-                    <TableCell>{formValues.displayName}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Username:</strong></TableCell>
-                    <TableCell>{formValues.username}@cheezious.com</TableCell>
-                  </TableRow>
-                  {generatePassword && (
-                    <TableRow>
-                      <TableCell variant="head"><strong>Generated Password:</strong></TableCell>
-                      <TableCell>{generatedPassword}</TableCell>
-                    </TableRow>
-                  )}
-                  <TableRow>
-                    <TableCell variant="head"><strong>Role:</strong></TableCell>
-                    <TableCell>{role}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Zone:</strong></TableCell>
-                    <TableCell>{selectedZone}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Branch:</strong></TableCell>
-                    <TableCell>{selectedBranch}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell variant="head"><strong>Selected Modules:</strong></TableCell>
-                    <TableCell>{renderModules()}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </>
-          ) : null}
-
+          {renderStepContent()}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
             <Button
               disabled={activeStep === 0}
@@ -1003,22 +878,22 @@ const AddUserDrawer = ({ open, onClose, onUserCreated }) => {
               </Button>
             )}
           </Box>
-
-          {/* Add the Snackbar component */}
-          <Snackbar
-            open={notificationOpen}
-            autoHideDuration={3000}
-            onClose={handleNotificationClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <Alert onClose={handleNotificationClose} severity="success" sx={{ width: '100%' }}>
-              User Has Been Created Successfully!
-            </Alert>
-          </Snackbar>
         </Box>
       </Box>
+
+      <Snackbar
+        open={notificationOpen}
+        autoHideDuration={3000}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleNotificationClose} severity="success" sx={{ width: '100%' }}>
+          User Has Been Created Successfully!
+        </Alert>
+      </Snackbar>
     </Drawer>
   );
 };
 
 export default AddUserDrawer;
+

@@ -11,16 +11,16 @@ import { useNavigate } from 'react-router-dom';
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: '50px',
-  backgroundColor: alpha('#7c402e', 0.75),
+  backgroundColor: alpha('#5c104f', 0.8), // Adjusted to match app bar color
   '&:hover': {
-    backgroundColor: alpha('#7c402e', 0.85),
+    backgroundColor: alpha('#5c104f', 0.9), // Darker hover state
   },
   marginRight: '50px',
   marginLeft: '50px',
   width: '50%',
-  maxWidth: '700px',
+  maxWidth: '600px',
   [theme.breakpoints.up('sm')]: {
-    marginLeft: 'auto',
+    marginLeft: '400px',
     marginRight: '210px',
     width: '50%',
   },
