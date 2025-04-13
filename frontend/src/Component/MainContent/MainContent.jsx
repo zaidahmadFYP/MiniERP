@@ -13,7 +13,7 @@ import TilesGrid from '../TileGrid/TileGrid';
 import TabsComponent from '../TabComponent/TabComponent';
 import AnnouncementForm from './AnnouncementForm';
 import TaskForm from './TaskForm';
-import CalendarComponent from './CalendarComponent';
+import CalendarComponent from './CalandarComponent';
 import RetailCommerce from '../../pages/RetailCommerce/RetailCommerce';
 
 const MainContent = ({ user }) => {

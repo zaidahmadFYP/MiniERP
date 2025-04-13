@@ -185,6 +185,6 @@ const CalendarComponent = ({ isMobile }) => {
       </LocalizationProvider>
     </Box>
   );
-};git 
+}; 
 
 export default CalendarComponent;
